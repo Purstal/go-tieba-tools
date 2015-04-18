@@ -12,7 +12,7 @@ import (
 
 func GetForumStruct(
 	acc *accounts.Account, kw string, rn,
-	pn int) (*ForumPage, []ForumPageThread, *ForumPageExtra, error, *pberrors.PbError) {
+	pn int) (*ForumPage, []*ForumPageThread, *ForumPageExtra, error, *pberrors.PbError) {
 
 	ofp, err, pberr := GetOriginalForumStruct(acc, kw, rn, pn)
 
@@ -29,13 +29,14 @@ func GetForumStruct(
 	}
 
 	var fp ForumPage
-	var ThreadList = make([]ForumPageThread, len(ofp.ThreadList))
+	var ThreadList = make([]*ForumPageThread, len(ofp.ThreadList))
 
 	fp.Fid = ofp.Forum.ID
 	fp.ForumName = ofp.Forum.Name
 
 	for i, ot := range ofp.ThreadList {
-		t := &ThreadList[i]
+		t := &ForumPageThread{} //&ThreadList[i]
+		ThreadList[i] = t
 		t.Tid = ot.Tid
 		t.Title = ot.Title
 		t.ReplyNum = ot.ReplyNum
@@ -61,6 +62,7 @@ func GetForumStruct(
 		//t.Abstract, _ = json.Marshal(ot.Abstract)
 
 		//t.Forum = &fp
+
 	}
 
 	return &fp, ThreadList, &fpe, nil, nil
