@@ -80,12 +80,10 @@ func NewFreshPostMonitor(accWin8 *accounts.Account, kw string,
 
 			for _, thread := range threadList {
 				if oldTime != nil && thread.LastReplyTime.Before(*oldTime) {
-					//fmt.Println("break", thread.LastReplyTime, *oldTime)
 					break
 				}
-				if !thread.LastReplyTime.After(thisOldestTime) {
-					if !recorder.Found(thread.LastReplyTime, thread.Tid, thread.LastReplyer.ID) {
-					} else {
+				if thread.LastReplyTime.Equal(thisOldestTime) {
+					if recorder.Found(thread.LastReplyTime, thread.Tid, thread.LastReplyer.ID) {
 						continue
 					}
 				}
@@ -216,7 +214,7 @@ func (recorder *freshPostRecorder) GetOldestRecordTime() *time.Time {
 	return &(*recorder)[len(*recorder)-1].serverTime
 }
 
-func OldNewFreshPostMonitor(accWin8 *accounts.Account, kw string,
+func NewFreshPostMonitor_oldversion(accWin8 *accounts.Account, kw string,
 	interval time.Duration) *FreshPostMonitor {
 
 	var monitor = FreshPostMonitor{}
