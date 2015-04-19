@@ -102,7 +102,7 @@ func main() {
 
 	InitAssessor()
 
-	pd.Run()
+	pd.Run(time.Second / 2)
 
 	<-make(chan bool)
 
@@ -118,11 +118,18 @@ func InitAssessor() {
 	水楼Tids = make(map[uint64]bool)
 	服务器楼Tids = make(map[uint64]bool)
 	吧规Tids = make(map[uint64]bool)
-	内容关键词 = KeepUpdatingKeyWords(settings.PostContentRegexpFilePath)
+	if settings.PostContentRegexpFilePath != "" {
+		内容关键词 = KeepUpdatingKeyWords(settings.PostContentRegexpFilePath)
+	} else {
+		内容关键词 = new([]*regexp.Regexp)
+		logs.Warn("未设置正则关键词文件")
+	}
 
 }
 
 func ThreadFilter(account *accounts.Account, thread *postfinder.ForumPageThread) (postfinder.Control, string) {
+
+	fmt.Println(thread.Thread.LastReplyTime.Unix(), thread.Thread.Tid, thread.Thread.LastReplyer.ID)
 
 	if (thread.Thread.Author.Name == "MC吧饮水姬" || 包含字符串(settings.BawuList, thread.Thread.Author.Name)) &&
 		strings.Contains(thread.Thread.Title, "官方水楼") {

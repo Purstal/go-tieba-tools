@@ -29,98 +29,6 @@ func (filter *FreshPostMonitor) Stop() {
 	filter.actChan <- action{"Stop", nil}
 }
 
-func NewFreshPostMonitor(accWin8 *accounts.Account, kw string,
-	interval time.Duration) *FreshPostMonitor {
-
-	var monitor = FreshPostMonitor{}
-	monitor.forum_page_monitor = NewForumPageMonitor(accWin8, kw, interval)
-	monitor.actChan = make(chan action)
-	monitor.PageChan = make(chan ForumPage)
-
-	go func() {
-		var recorder = newFreshPostRecorder()
-
-		for {
-			var forumPage ForumPage
-			select {
-			case forumPage = <-monitor.forum_page_monitor.PageChan:
-			case act := <-monitor.actChan:
-				switch act.action {
-				case "Stop":
-					monitor.forum_page_monitor.Stop()
-					close(monitor.actChan)
-				}
-				continue
-			}
-
-			var threadList = PageThreadsSorter(forumPage.ThreadList)
-			if len(threadList) == 0 {
-				continue
-			}
-
-			sort.Sort(threadList)
-
-			var freshThreadList = make([]*forum.ForumPageThread, 0)
-
-			var oldTime = recorder.GetOldestRecordTime()
-			var thisOldestTime time.Time
-			var thisNewestTime time.Time = threadList[0].LastReplyTime
-
-			if oldTime != nil {
-				thisOldestTime = threadList[0].LastReplyTime
-				for _, thread := range threadList[1:] {
-					if thread.LastReplyTime.Unix() < thisOldestTime.Unix() &&
-						thread.LastReplyTime.Unix() >= oldTime.Unix() {
-						thisOldestTime = thread.LastReplyTime
-					}
-				}
-			} else {
-				thisOldestTime = threadList[len(threadList)-1].LastReplyTime
-			}
-
-			for _, thread := range threadList {
-				if oldTime != nil && thread.LastReplyTime.Before(*oldTime) {
-					break
-				}
-				if thread.LastReplyTime.Equal(thisOldestTime) {
-					if recorder.Found(thread.LastReplyTime, thread.Tid, thread.LastReplyer.ID) {
-						continue
-					}
-				}
-				if thread.LastReplyTime.Equal(thisNewestTime) {
-					recorder.Report(thread.LastReplyTime, thread.Tid, thread.LastReplyer.ID)
-				}
-				freshThreadList = append(freshThreadList, thread)
-				//fmt.Println(!recorder.Found(thread.LastReplyTime, thread.Tid, thread.LastReplyer.ID))
-			}
-			if threadCount := len(freshThreadList); threadCount != 0 {
-
-				//fmt.Println(threadCount, monitor.forum_page_monitor.rn)
-				//data, _ := json.Marshal(recorder)
-				//fmt.Println(string(data))
-				//fmt.Println(len(*recorder))
-				//fmt.Println(freshThreadList)
-
-				if newRn := 8 + threadCount*2; newRn > 100 {
-					monitor.forum_page_monitor.rn = 100
-				} else {
-					monitor.forum_page_monitor.rn = 8 + threadCount*2
-				}
-
-				monitor.PageChan <- ForumPage{
-					Forum:      forumPage.Forum,
-					ThreadList: freshThreadList,
-					Extra:      forumPage.Extra,
-				}
-
-			}
-
-		}
-	}()
-
-	return &monitor
-}
-
 func TryGettingUserName(acc *accounts.Account, uid uint64) string {
 	if uid == 0 {
 		return ""
@@ -149,72 +57,7 @@ type dayRecord struct {
 	foundPostMap map[uint64][]uint64 //tid->uids
 }
 
-func NewFreshPostRecorderForTest() *freshPostRecorder {
-	return newFreshPostRecorder()
-}
-
-func newFreshPostRecorder() *freshPostRecorder {
-	return new(freshPostRecorder)
-}
-
-const _MAX_RECORD_DAY = 3
-
-func (recorder *freshPostRecorder) Report(postTime time.Time, tid, uid uint64) {
-	var record *dayRecord
-	var i int = 0
-	if len(*recorder) > 0 {
-		for ; i < len(*recorder); i++ {
-			if postTime.After((*recorder)[i].serverTime) {
-				var _recorder = *recorder
-				*recorder = append((*recorder)[:i], dayRecord{postTime, make(map[uint64][]uint64)})
-				if len(_recorder) >= _MAX_RECORD_DAY {
-					*recorder = append(*recorder, _recorder[i:_MAX_RECORD_DAY-1]...)
-				} else {
-					*recorder = append(*recorder, _recorder[i:]...)
-				}
-				record = &(*recorder)[i]
-				break
-			} else if postTime.Equal((*recorder)[i].serverTime) {
-				record = &(*recorder)[i]
-				break
-			} else {
-				return
-			}
-		}
-	} else {
-		*recorder = freshPostRecorder{dayRecord{postTime, make(map[uint64][]uint64)}}
-		record = &(*recorder)[0]
-	}
-
-	record.foundPostMap[tid] = append(record.foundPostMap[tid], uid)
-
-	return
-
-}
-
-func (recorder *freshPostRecorder) Found(postTime time.Time, tid, uid uint64) bool {
-	for i, _ := range *recorder {
-		if (*recorder)[i].serverTime.Equal(postTime) {
-			//fmt.Println(len((*recorder)[i].foundPostMap))
-			for _, _uid := range (*recorder)[i].foundPostMap[tid] {
-				if _uid == uid {
-					return true
-				}
-			}
-			return false
-		}
-	}
-	return false
-}
-
-func (recorder *freshPostRecorder) GetOldestRecordTime() *time.Time {
-	if len(*recorder) == 0 {
-		return nil
-	}
-	return &(*recorder)[len(*recorder)-1].serverTime
-}
-
-func NewFreshPostMonitor_oldversion(accWin8 *accounts.Account, kw string,
+func NewFreshPostMonitor(accWin8 *accounts.Account, kw string,
 	interval time.Duration) *FreshPostMonitor {
 
 	var monitor = FreshPostMonitor{}
@@ -251,19 +94,32 @@ func NewFreshPostMonitor_oldversion(accWin8 *accounts.Account, kw string,
 				logIDNow = forumPage.Extra.LogID
 				serverTimeNowInt = forumPage.Extra.ServerTime.Unix()
 			}
-			var nowFreshPostMap = make(map[uint64]uint64)
-			var nowFreshPostTime time.Time
 
 			var threadList = PageThreadsSorter(forumPage.ThreadList)
 			sort.Sort(threadList)
 
-			var freshThreadList []*forum.ForumPageThread
-
+			var nowFreshPostTime time.Time
 			for _, thread := range threadList {
+				if thread.LastReplyTime.Before(lastFreshPostTime) {
+					if thread.IsTop {
+						continue
+					}
+					break
+				}
 				if nowFreshPostTime.Before(thread.LastReplyTime) {
 					nowFreshPostTime = thread.LastReplyTime
-					freshThreadList = nil
 				}
+			}
+
+			var nowFreshPostMap map[uint64]uint64
+			if nowFreshPostTime.Equal(lastFreshPostTime) {
+				nowFreshPostMap = lastFreshPostMap
+			} else {
+				nowFreshPostMap = make(map[uint64]uint64)
+			}
+
+			var freshThreadList []*forum.ForumPageThread
+			for _, thread := range threadList {
 				if thread.LastReplyTime.Before(lastFreshPostTime) {
 					if thread.IsTop {
 						continue
@@ -286,7 +142,7 @@ func NewFreshPostMonitor_oldversion(accWin8 *accounts.Account, kw string,
 			}
 			if threadCount := len(freshThreadList); threadCount != 0 {
 
-				fmt.Println(threadCount, monitor.forum_page_monitor.rn)
+				//fmt.Println(threadCount, monitor.forum_page_monitor.rn)
 
 				if newRn := 8 + threadCount*2; newRn > 100 {
 					monitor.forum_page_monitor.rn = 100

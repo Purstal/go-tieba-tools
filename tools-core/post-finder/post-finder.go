@@ -98,20 +98,20 @@ type ForumPageThread struct {
 	Extra  *forum.ForumPageExtra
 }
 
-func (pd *PostFinder) Run() {
+func (pd *PostFinder) Run(monitorInterval time.Duration) {
 
 	//monitor.MakeForumPageThreadChan(acc, "minecraft")
 	var threadChan = make(chan ForumPageThread)
-	pd.FreshPostMonitor = monitor.NewFreshPostMonitor(pd.AccWin8, pd.ForumName, time.Second)
+	pd.FreshPostMonitor = monitor.NewFreshPostMonitor(pd.AccWin8, pd.ForumName, monitorInterval)
 
 	go func() {
 		for {
 			forumPage := <-pd.FreshPostMonitor.PageChan
-			fmt.Println(len(forumPage.ThreadList))
+			//fmt.Println(len(forumPage.ThreadList))
 			if forumPage.Extra.ServerTime.After(pd.ServerTime) {
 				pd.ServerTime = forumPage.Extra.ServerTime
 			}
-
+			fmt.Println("---", forumPage.Extra.ServerTime)
 			for _, thread := range forumPage.ThreadList {
 				threadChan <- ForumPageThread{
 					Forum:  forumPage.Forum,
