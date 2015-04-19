@@ -2,7 +2,7 @@ package post_finder
 
 import (
 	"os"
-	"strconv"
+	//"strconv"
 	"time"
 
 	"github.com/purstal/pbtools/modules/logs"
@@ -17,7 +17,7 @@ var (
 var logDir string
 
 func InitLoggers() {
-	logDir = "log/PostFinder/" + strconv.FormatInt(time.Now().Unix(), 16) + "/"
+	logDir = "log/PostFinder/" + time.Now().Format("20060102_150405") + "/"
 	os.MkdirAll(logDir, 0744)
 
 	if logFile, err := os.Create(logDir + "log"); err == nil {

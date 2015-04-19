@@ -68,8 +68,8 @@ type Settings struct {
 var settings *Settings
 
 func main() {
-	os.Mkdir("logs", 0777)
-	logfile, _ := os.Create("logs/" + strconv.FormatInt(time.Now().Unix(), 16))
+	os.MkdirAll("log/simpleLuaPostDeleter", 0777)
+	logfile, _ := os.Create("log/simplePostDeleter/" + time.Now().Format("20060102_150405"))
 	defer logfile.Close()
 	logs.DefaultLogger = logs.NewLogger(logs.DebugLevel, os.Stdout, logfile)
 	logs.DefaultLogger.LogWithTime = false
@@ -102,34 +102,30 @@ func main() {
 
 	InitAssessor()
 
-	pd.Run(time.Second / 2)
+	pd.Run(time.Second)
 
 	<-make(chan bool)
 
 }
 
-var 水楼Tids map[uint64]bool
-var 服务器楼Tids map[uint64]bool
-var 吧规Tids map[uint64]bool
+var 水楼Tids = make(map[uint64]bool)
+var 服务器楼Tids = make(map[uint64]bool)
+var 吧规Tids = make(map[uint64]bool)
 var 内容关键词 *[]*regexp.Regexp
 
 func InitAssessor() {
 	os.Mkdir("debug", 0777)
-	水楼Tids = make(map[uint64]bool)
-	服务器楼Tids = make(map[uint64]bool)
-	吧规Tids = make(map[uint64]bool)
 	if settings.PostContentRegexpFilePath != "" {
 		内容关键词 = KeepUpdatingKeyWords(settings.PostContentRegexpFilePath)
 	} else {
 		内容关键词 = new([]*regexp.Regexp)
 		logs.Warn("未设置正则关键词文件")
 	}
-
 }
 
 func ThreadFilter(account *accounts.Account, thread *postfinder.ForumPageThread) (postfinder.Control, string) {
 
-	fmt.Println(thread.Thread.LastReplyTime.Unix(), thread.Thread.Tid, thread.Thread.LastReplyer.ID)
+	//fmt.Println(thread.Thread.LastReplyTime.Unix(), thread.Thread.Tid, thread.Thread.LastReplyer.ID)
 
 	if (thread.Thread.Author.Name == "MC吧饮水姬" || 包含字符串(settings.BawuList, thread.Thread.Author.Name)) &&
 		strings.Contains(thread.Thread.Title, "官方水楼") {
