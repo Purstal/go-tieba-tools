@@ -6,8 +6,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/accounts"
+	"github.com/purstal/pbtools/modules/postbar/apis"
 	"github.com/purstal/pbtools/modules/postbar/forum-win8-1.5.0.0"
 )
 
@@ -126,7 +126,7 @@ func TryGettingUserName(acc *accounts.Account, uid uint64) string {
 		return ""
 	}
 	for {
-		info, err := postbar.GetUserInfo(acc, uid)
+		info, err := apis.GetUserInfo(acc, uid)
 		if err == nil {
 			switch info.ErrorCode.(type) {
 			case (float64):

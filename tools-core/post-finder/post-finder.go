@@ -3,14 +3,14 @@ package post_finder
 import (
 	"fmt"
 	//"net/http"
-	"strconv"
-	"time"
-
 	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/accounts"
 	"github.com/purstal/pbtools/modules/postbar/advsearch"
+	"github.com/purstal/pbtools/modules/postbar/apis"
 	"github.com/purstal/pbtools/modules/postbar/forum-win8-1.5.0.0"
 	"github.com/purstal/pbtools/modules/postbar/thread-win8-1.5.0.0"
+	"strconv"
+	"time"
 	//"github.com/purstal/pbtools/modules/logs"
 	"github.com/purstal/pbtools/modules/pberrors"
 	monitor "github.com/purstal/pbtools/tools-core/forum-page-monitor"
@@ -70,7 +70,7 @@ func NewPostFinder(accWin8, accAndr *accounts.Account, forumName string, yield f
 		panic("删贴机初始化错误,有函数未设置: " + fmt.Sprintln(postFinder) + ".")
 	}
 
-	fid, err, pberr := postbar.GetFid(forumName)
+	fid, err, pberr := apis.GetFid(forumName)
 	if err != nil || pberr != nil {
 		Logger.Fatal("获取fid时出错: ", err, pberr)
 		return nil

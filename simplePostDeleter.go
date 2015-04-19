@@ -18,6 +18,7 @@ import (
 	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/accounts"
 	"github.com/purstal/pbtools/modules/postbar/advsearch"
+	"github.com/purstal/pbtools/modules/postbar/apis"
 	postfinder "github.com/purstal/pbtools/tools-core/post-finder"
 	"purstal/pbtools2/tools/pbutil"
 )
@@ -465,7 +466,7 @@ func DeletePost(from string, account *accounts.Account, tid, pid, spid, uid uint
 	logs.Info(prefix, from, "删贴:", reason, ".")
 
 	for i := 0; ; i++ {
-		err, pberr := postbar.DeletePost(account, op_pid)
+		err, pberr := apis.DeletePost(account, op_pid)
 		if err == nil && (pberr == nil || pberr.ErrorCode == 0) {
 			return postfinder.Finish
 		} else if i < 3 {
@@ -483,7 +484,7 @@ func DeleteThread(from string, account *accounts.Account, tid, pid, uid uint64, 
 	logs.Info(prefix, from, "删主题:", reason, ".")
 
 	for i := 0; ; i++ {
-		err, pberr := postbar.DeleteThread(account, tid)
+		err, pberr := apis.DeleteThread(account, tid)
 		if err == nil && (pberr == nil || pberr.ErrorCode == 0) {
 			return postfinder.Finish
 		} else if i < 3 {
