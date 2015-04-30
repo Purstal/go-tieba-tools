@@ -95,8 +95,8 @@ func (acc *Account) Login(password string) (error, *pberrors.PbError) {
 	return nil, nil
 }
 
-func (acc *Account) IsLogin() (bool, error) {
-	resp, err := GetTbsWeb(acc.BDUSS)
+func IsLogin(BDUSS string) (bool, error) {
+	resp, err := GetTbsWeb(BDUSS)
 	if err != nil {
 		return false, err
 	}
@@ -109,4 +109,8 @@ func (acc *Account) IsLogin() (bool, error) {
 		return false, err2
 	}
 	return x.IsLogin == 1, nil
+}
+
+func (acc *Account) IsLogin() (bool, error) {
+	return IsLogin(acc.BDUSS)
 }

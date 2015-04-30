@@ -1,0 +1,32 @@
+[Thread]
+
+    #扫描线程数
+    ScanGoroutineNumber = 500
+
+    #每个扫描线程的分析线程数
+    AnalyseGoroutineNumberPerScanGorountine = 1
+
+[Net]
+
+    #最多重试次数
+    MaxRetryTime = 5
+    #-1则不限
+
+    #超时(毫秒)
+    TimeOutMs = 60000
+    #以秒为单位.超过时间自动重试
+
+    #这个删掉了,纪念用:
+    ##空日志重试次数=-1
+    ##;当抓到空日志页面时的重试次数(一般都是由于百度傲娇),-1则不限
+    ##;这种现象尤其在删贴机/人肉删贴机上突出
+
+[Log]
+
+    Log1 = true
+    #正常的log
+
+    Log2 = true
+
+    Log3 = true
+    #调试用

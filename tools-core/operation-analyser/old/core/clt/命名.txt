@@ -1,0 +1,7 @@
+web - 网页端
+wap - wap端
+clt - 安卓客户端,ios客户端,windows8客户端
+clta - 安卓客户端
+clti - ios客户端
+clt8 - windows8客户端
+cltw - windowsphone客户端

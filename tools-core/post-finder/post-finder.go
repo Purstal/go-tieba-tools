@@ -18,7 +18,6 @@ const (
 	Continue Control = 1
 )
 
-type ThreadFilter func(account *accounts.Account, thread *ForumPageThread) (Control, string) //false则无需Continue,下同
 type ThreadAssessor func(account *accounts.Account, thread *ForumPageThread) Control
 type AdvSearchAssessor func(account *accounts.Account, result *advsearch.AdvSearchResult) Control
 type PostAssessor func(account *accounts.Account, post *ThreadPagePost)
@@ -30,13 +29,15 @@ type PostFinder struct {
 	AccWin8, AccAndr        *accounts.Account
 	ForumName               string
 	Fid                     uint64
-	ThreadFilter            ThreadFilter
+	ThreadFilter            ThreadAssessor
 	NewThreadFirstAssessor  ThreadAssessor
 	NewThreadSecondAssessor PostAssessor
 	AdvSearchAssessor       AdvSearchAssessor
 	PostAssessor            PostAssessor
 	CommentAssessor         CommentAssessor
 	SearchTaskManager       *SearchTaskManager
+
+	//Abandon...
 
 	Debugger *Debugger
 	Debug    struct {
@@ -123,8 +124,7 @@ func (finder *PostFinder) Run(monitorInterval time.Duration) {
 			if finder.SearchTaskManager.Debug.CurrentServerTime.Before(thread.Extra.ServerTime) {
 				finder.SearchTaskManager.Debug.CurrentServerTime = thread.Extra.ServerTime
 			}
-			if ctrl, _ := finder.ThreadFilter(finder.AccWin8, &thread); ctrl == Continue { //true:不忽略
-				//第二项是原因
+			if ctrl := finder.ThreadFilter(finder.AccWin8, &thread); ctrl == Continue { //true:不忽略
 				if IsNewThread(&thread.Thread) {
 					go finder.FindAndAnalyseNewThread(&thread)
 				} else {

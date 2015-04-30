@@ -10,7 +10,7 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"regexp"
-	"strconv"
+	//"strconv"
 	"strings"
 	"time"
 
@@ -123,21 +123,21 @@ func InitAssessor() {
 	}
 }
 
-func ThreadFilter(account *accounts.Account, thread *postfinder.ForumPageThread) (postfinder.Control, string) {
+func ThreadFilter(account *accounts.Account, thread *postfinder.ForumPageThread) postfinder.Control {
 
 	//fmt.Println(thread.Thread.LastReplyTime.Unix(), thread.Thread.Tid, thread.Thread.LastReplyer.ID)
 
 	if (thread.Thread.Author.Name == "MC吧饮水姬" || 包含字符串(settings.BawuList, thread.Thread.Author.Name)) &&
 		strings.Contains(thread.Thread.Title, "官方水楼") {
 		if thread.Thread.LastReplyer.Name == "iamunknown" {
-			return postfinder.Continue, "" //测试用
+			return postfinder.Continue //测试用
 		}
 		水楼Tids[thread.Thread.Tid] = true
-		return postfinder.Finish, "水楼"
+		return postfinder.Finish
 	}
 
 	if 包含字符串(settings.BawuList, thread.Thread.LastReplyer.Name) {
-		return postfinder.Finish, "吧务发贴"
+		return postfinder.Finish
 	}
 	if 包含字符串(settings.BawuList, thread.Thread.Author.Name) {
 		if strings.Contains(thread.Thread.Title, "服务器发布贴") {
@@ -149,7 +149,7 @@ func ThreadFilter(account *accounts.Account, thread *postfinder.ForumPageThread)
 		}
 
 	}
-	return postfinder.Continue, ""
+	return postfinder.Continue
 }
 
 func AdvSearchAssessor(account *accounts.Account, result *advsearch.AdvSearchResult) postfinder.Control {

@@ -1,0 +1,15 @@
+[[Task]]
+
+    #使用的账号
+    Accounts = ["iamunknown"]
+    #可以有多个,前面的无法访问后台会使用下面的
+
+    #对象贴吧
+    ForumName = "minecraft"
+
+    #开始扫描时间 #2013-8-5
+    BeginDate = "2014-1-1"
+
+    #结束扫描时间
+    EndDate = "2014-1-2"
+    #

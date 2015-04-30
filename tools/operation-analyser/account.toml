@@ -1,0 +1,7 @@
+﻿[iamunknown]
+
+    Password = ""
+        #有验证码就挂
+
+    BDUSS = ""
+        #如果登录失败,可以截取BDUSS放到这里
