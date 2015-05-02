@@ -17,7 +17,7 @@ https://github.com/Purstal/pbtools/tree/master/modules/postbar/apis
 * 主页:
 https://github.com/Purstal/pbtools/tree/master/modules/postbar/forum-win8-1.5.0.0/forum.go
 * 主题:
-https://github.com/Purstal/pbtools/tree/master/modules/postbar/thread-win8-1.5.0.0/forum.go
+https://github.com/Purstal/pbtools/tree/master/modules/postbar/thread-win8-1.5.0.0/thread.go
 * 楼层:
 https://github.com/Purstal/pbtools/tree/master/modules/postbar/floor-andr-6.1.3/floor.go
 
@@ -55,4 +55,4 @@ code.google.com/p/mahonia<br/>
 github.com/BurntSushi/toml<br/>
 
 
-<!--兔子我喜欢你!-->
+<!--5YWU5a2Q5oiR5Zac5qyi5L2gIQ==-->
