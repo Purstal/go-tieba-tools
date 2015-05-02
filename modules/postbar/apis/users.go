@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/purstal/pbtools/modules/http"
-	"github.com/purstal/pbtools/modules/postbar/accounts"
+	"github.com/purstal/pbtools/modules/postbar"
 )
 
 type ForumLikePageForumList struct {
@@ -21,13 +21,13 @@ type ForumLikePageForum struct {
 }
 
 //无论隐藏与否
-func GetUserForumLike(acc *accounts.Account, uid uint64) (*ForumLikePageForumList, error) {
+func GetUserForumLike(acc *postbar.Account, uid uint64) (*ForumLikePageForumList, error) {
 
 	var parameters http.Parameters
 
 	parameters.Add("uid", strconv.FormatUint(uid, 10))
 
-	accounts.ProcessParams(&parameters, acc)
+	postbar.ProcessParams(&parameters, acc)
 
 	resp, err := http.Post("http://c.tieba.baidu.com/c/f/forum/like", parameters)
 	if err != nil {
@@ -43,7 +43,7 @@ func GetUserForumLike(acc *accounts.Account, uid uint64) (*ForumLikePageForumLis
 
 }
 
-func _GetUserProfile(acc *accounts.Account, uid uint64) {
+func _GetUserProfile(acc *postbar.Account, uid uint64) {
 	/*
 		var parameters http.Parameters
 
@@ -66,11 +66,11 @@ type UserInfo struct {
 	ErrorCode interface{} `json:"error_code"`
 }
 
-func GetUserInfo(acc *accounts.Account, uid uint64) (*UserInfo, error) {
+func GetUserInfo(acc *postbar.Account, uid uint64) (*UserInfo, error) {
 	var parameters http.Parameters
 
 	parameters.Add("uid", strconv.FormatUint(uid, 10))
-	accounts.ProcessParams(&parameters, acc)
+	postbar.ProcessParams(&parameters, acc)
 
 	resp, err := http.Post("http://c.tieba.baidu.com/c/u/user/getuserinfo", parameters)
 

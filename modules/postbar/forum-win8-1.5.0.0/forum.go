@@ -7,11 +7,11 @@ import (
 
 	"github.com/purstal/pbtools/modules/http"
 	"github.com/purstal/pbtools/modules/pberrors"
-	"github.com/purstal/pbtools/modules/postbar/accounts"
+	"github.com/purstal/pbtools/modules/postbar"
 )
 
 func GetForumStruct(
-	acc *accounts.Account, kw string, rn,
+	acc *postbar.Account, kw string, rn,
 	pn int) (*ForumPage, []*ForumPageThread, *ForumPageExtra, error, *pberrors.PbError) {
 
 	ofp, err, pberr := GetOriginalForumStruct(acc, kw, rn, pn)
@@ -68,7 +68,7 @@ func GetForumStruct(
 	return &fp, ThreadList, &fpe, nil, nil
 }
 
-func GetForumPage(acc *accounts.Account, kw string, rn,
+func RGetForum(acc *postbar.Account, kw string, rn,
 	pn int) ([]byte, error) {
 	var parameters http.Parameters
 
@@ -77,7 +77,7 @@ func GetForumPage(acc *accounts.Account, kw string, rn,
 	parameters.Add("pn", strconv.Itoa(pn))
 	//is_good
 
-	accounts.ProcessParams(&parameters, acc)
+	postbar.ProcessParams(&parameters, acc)
 
 	return http.Post(`http://c.tieba.baidu.com/c/f/frs/page`, parameters)
 

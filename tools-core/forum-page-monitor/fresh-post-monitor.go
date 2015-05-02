@@ -6,7 +6,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/purstal/pbtools/modules/postbar/accounts"
+	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/apis"
 	"github.com/purstal/pbtools/modules/postbar/forum-win8-1.5.0.0"
 )
@@ -29,7 +29,7 @@ func (filter *FreshPostMonitor) Stop() {
 	filter.actChan <- action{"Stop", nil}
 }
 
-func TryGettingUserName(acc *accounts.Account, uid uint64) string {
+func TryGettingUserName(acc *postbar.Account, uid uint64) string {
 	if uid == 0 {
 		return ""
 	}
@@ -57,7 +57,7 @@ type dayRecord struct {
 	foundPostMap map[uint64][]uint64 //tid->uids
 }
 
-func NewFreshPostMonitor(accWin8 *accounts.Account, kw string,
+func NewFreshPostMonitor(accWin8 *postbar.Account, kw string,
 	interval time.Duration) *FreshPostMonitor {
 
 	var monitor = FreshPostMonitor{}

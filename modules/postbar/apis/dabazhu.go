@@ -5,17 +5,17 @@ import (
 
 	"github.com/purstal/pbtools/modules/http"
 	"github.com/purstal/pbtools/modules/pberrors"
-	"github.com/purstal/pbtools/modules/postbar/accounts"
+	"github.com/purstal/pbtools/modules/postbar"
 )
 
-func CancelBlockIDWeb(account *accounts.Account,
+func CancelBlockIDWeb(acc *postbar.Account,
 	forumName, userID,
 	userName string) (error, *pberrors.PbError) {
 
 	var parameters http.Parameters
 	parameters.Add("word", forumName)
 
-	tbs, err, pberr := account.GetTbs()
+	tbs, err, pberr := GetTbs(acc)
 	if err != nil {
 		return err, nil
 	} else if pberr != nil {
@@ -29,7 +29,7 @@ func CancelBlockIDWeb(account *accounts.Account,
 	parameters.Add("list%5B0%5D%5Buser_name%5D", userName)
 
 	var cookies http.Cookies
-	cookies.Add("BDUSS", account.BDUSS)
+	cookies.Add("BDUSS", acc.BDUSS)
 
 	resp, err := http.Get("http://tieba.baidu.com/bawu2/platform/cancelFilter", parameters, cookies)
 

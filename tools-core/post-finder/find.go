@@ -6,7 +6,6 @@ import (
 
 	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/accounts"
 	"github.com/purstal/pbtools/modules/postbar/thread-win8-1.5.0.0"
 	"time"
 )
@@ -96,7 +95,7 @@ type ThreadPagePost struct {
 	Extra  *thread.ThreadPageExtra
 }
 
-func TryGettingThreadPageStruct(accWin8 *accounts.Account, kz uint64,
+func TryGettingThreadPageStruct(accWin8 *postbar.Account, kz uint64,
 	mark bool, pid uint64, pn, rn int, withFloor, seeLz,
 	r bool) (*ThreadPage, *pberrors.PbError) {
 	//fmt.Println("TryGettingThreadPageStruct")
@@ -133,7 +132,7 @@ func TryGettingThreadPageStruct(accWin8 *accounts.Account, kz uint64,
 
 }
 
-func TryGettingThreadPageStruct2(accWin8 *accounts.Account, kz uint64,
+func TryGettingThreadPageStruct2(accWin8 *postbar.Account, kz uint64,
 	mark bool, pid uint64, pn, rn int, withFloor, seeLz,
 	r bool) *ThreadPage {
 

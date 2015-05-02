@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/purstal/pbtools/modules/pberrors"
-	"github.com/purstal/pbtools/modules/postbar/accounts"
+	"github.com/purstal/pbtools/modules/postbar"
 )
 
 type OriginalFloorStruct struct {
@@ -58,9 +58,9 @@ type OriginalFloorStruct struct {
 	ErrorMsg  string `json:"error_msg"`
 }
 
-func GetOriginalFloorStruct(acc *accounts.Account, kz uint64,
+func GetOriginalFloorStruct(acc *postbar.Account, kz uint64,
 	isComment bool, id uint64, pn int) (*OriginalFloorStruct, error, *pberrors.PbError) {
-	resp, err := GetFloorJson(acc, kz, isComment, id, pn)
+	resp, err := RGetFloor(acc, kz, isComment, id, pn)
 
 	if err != nil {
 		return nil, err, nil

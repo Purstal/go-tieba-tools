@@ -16,15 +16,14 @@ import (
 
 	"github.com/purstal/pbtools/modules/logs"
 	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/accounts"
 	"github.com/purstal/pbtools/modules/postbar/advsearch"
 	"github.com/purstal/pbtools/modules/postbar/apis"
 	postfinder "github.com/purstal/pbtools/tools-core/post-finder"
 	"purstal/pbtools2/tools/pbutil"
 )
 
-var accWin8 *accounts.Account
-var accAndr *accounts.Account
+var accWin8 *postbar.Account
+var accAndr *postbar.Account
 
 func init() {
 	go func() {
@@ -82,8 +81,8 @@ func main() {
 		return
 	}
 
-	var accAndr = accounts.NewDefaultAndroidAccount("")
-	var accWin8 = accounts.NewDefaultWindows8Account("")
+	var accAndr = postbar.NewDefaultAndroidAccount("")
+	var accWin8 = postbar.NewDefaultWindows8Account("")
 	accWin8.BDUSS = settings.BDUSS
 	accAndr.BDUSS = settings.BDUSS
 
@@ -123,7 +122,7 @@ func InitAssessor() {
 	}
 }
 
-func ThreadFilter(account *accounts.Account, thread *postfinder.ForumPageThread) postfinder.Control {
+func ThreadFilter(account *postbar.Account, thread *postfinder.ForumPageThread) postfinder.Control {
 
 	//fmt.Println(thread.Thread.LastReplyTime.Unix(), thread.Thread.Tid, thread.Thread.LastReplyer.ID)
 
@@ -152,7 +151,7 @@ func ThreadFilter(account *accounts.Account, thread *postfinder.ForumPageThread)
 	return postfinder.Continue
 }
 
-func AdvSearchAssessor(account *accounts.Account, result *advsearch.AdvSearchResult) postfinder.Control {
+func AdvSearchAssessor(account *postbar.Account, result *advsearch.AdvSearchResult) postfinder.Control {
 
 	if 水楼Tids[result.Tid] {
 		if result.Author.Name == "iamunknown" {
@@ -178,7 +177,7 @@ func AdvSearchAssessor(account *accounts.Account, result *advsearch.AdvSearchRes
 	return postfinder.Continue
 }
 
-func NewThreadFirstAssessor(account *accounts.Account, thread *postfinder.ForumPageThread) postfinder.Control {
+func NewThreadFirstAssessor(account *postbar.Account, thread *postfinder.ForumPageThread) postfinder.Control {
 	//DebugLog("新主题第一次", thread.Thread.TGetContentList())
 	if matchedExp := 匹配正则组(*内容关键词, thread.Thread.Title); matchedExp != "" {
 		return DeleteThread("主页页面", account, thread.Thread.Tid, 0, thread.Thread.Author.ID, fmt.Sprint("标题匹配关键词:", matchedExp))
@@ -196,7 +195,7 @@ func NewThreadFirstAssessor(account *accounts.Account, thread *postfinder.ForumP
 	return postfinder.Continue
 }
 
-func NewThreadSecondAssessor(account *accounts.Account, post *postfinder.ThreadPagePost) {
+func NewThreadSecondAssessor(account *postbar.Account, post *postfinder.ThreadPagePost) {
 	if CommonAssess("主题页面(新主题)", account, post.Post, post.Thread.Tid) == postfinder.Finish {
 		return
 	}
@@ -208,7 +207,7 @@ func NewThreadSecondAssessor(account *accounts.Account, post *postfinder.ThreadP
 
 }
 
-func PostAssessor(account *accounts.Account, post *postfinder.ThreadPagePost) {
+func PostAssessor(account *postbar.Account, post *postfinder.ThreadPagePost) {
 	//logs.Debug(MakePrefix(GetServerTimeFromExtra(post.Extra), post.Thread.Tid, post.Post.Pid, 0, post.Post.Author.ID),
 	//	"新回复") //, post.Thread.Title, post.Post.Author, post.Post.ContentList)
 	if 吧规Tids[post.Thread.Tid] && !包含字符串(settings.BawuList, post.Post.Author.Name) {
@@ -229,7 +228,7 @@ func PostAssessor(account *accounts.Account, post *postfinder.ThreadPagePost) {
 	}
 }
 
-func CommentAssessor(account *accounts.Account, comment *postfinder.FloorPageComment) {
+func CommentAssessor(account *postbar.Account, comment *postfinder.FloorPageComment) {
 	//logs.Debug(MakePrefix(GetServerTimeFromExtra(comment.Extra), comment.Thread.Tid, comment.Post.Pid, comment.Comment.Spid, comment.Comment.Author.ID),
 	//	"新楼中楼回复") //, comment.Thread.Title, comment.Post.Author, comment.Comment.Author, comment.Comment.ContentList)
 	if CommonAssess("楼层页面", account, comment.Comment, comment.Thread.Tid) == postfinder.Finish {
@@ -239,7 +238,7 @@ func CommentAssessor(account *accounts.Account, comment *postfinder.FloorPageCom
 
 }
 
-func CommonAssess(from string, account *accounts.Account, post postbar.IPost, tid uint64) postfinder.Control {
+func CommonAssess(from string, account *postbar.Account, post postbar.IPost, tid uint64) postfinder.Control {
 
 	_, uid := post.PGetAuthor().AGetID()
 	pid := post.PGetPid()
@@ -292,7 +291,7 @@ func useless() {
 
 }
 
-func TidAssess(account *accounts.Account, post postbar.IPost, tid uint64) {
+func TidAssess(account *postbar.Account, post postbar.IPost, tid uint64) {
 
 }
 
@@ -451,7 +450,7 @@ func 匹配正则组(exps []*regexp.Regexp, text string) string {
 	return ""
 }
 
-func DeletePost(from string, account *accounts.Account, tid, pid, spid, uid uint64, reason string) postfinder.Control {
+func DeletePost(from string, account *postbar.Account, tid, pid, spid, uid uint64, reason string) postfinder.Control {
 
 	if account.BDUSS == "" {
 		logs.Fatal("BDUSS为空,忽略")
@@ -481,7 +480,7 @@ func DeletePost(from string, account *accounts.Account, tid, pid, spid, uid uint
 	}
 }
 
-func DeleteThread(from string, account *accounts.Account, tid, pid, uid uint64, reason string) postfinder.Control {
+func DeleteThread(from string, account *postbar.Account, tid, pid, uid uint64, reason string) postfinder.Control {
 
 	prefix := MakePrefix(nil, tid, pid, 0, uid)
 	logs.Info(prefix, from, "删主题:", reason, ".")

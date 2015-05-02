@@ -8,17 +8,17 @@ import (
 
 	"github.com/purstal/pbtools/modules/http"
 	"github.com/purstal/pbtools/modules/pberrors"
-	"github.com/purstal/pbtools/modules/postbar/accounts"
+	"github.com/purstal/pbtools/modules/postbar"
 )
 
-func DeletePost(account *accounts.Account, pid uint64) (error, *pberrors.PbError) {
+func DeletePost(acc *postbar.Account, pid uint64) (error, *pberrors.PbError) {
 	//无论是主题/回复,亦或是楼中楼,只要有pid都可以用这个删..
 	var parameters http.Parameters
 
 	parameters.Add("pid", strconv.FormatUint(pid, 10))
 	//↑楼中楼要spid,如果用pid会删掉整个楼层,因为pid是楼层的..
 
-	tbs, err, pberr := account.GetTbs()
+	tbs, err, pberr := GetTbs(acc)
 	if err != nil {
 		return err, nil
 	} else if pberr != nil {
@@ -26,7 +26,7 @@ func DeletePost(account *accounts.Account, pid uint64) (error, *pberrors.PbError
 	}
 	parameters.Add("tbs", tbs)
 
-	accounts.ProcessParams(&parameters, account)
+	postbar.ProcessParams(&parameters, acc)
 
 	resp, err := http.Post("http://c.tieba.baidu.com/c/c/bawu/delpost", parameters)
 	if err != nil {
@@ -36,10 +36,10 @@ func DeletePost(account *accounts.Account, pid uint64) (error, *pberrors.PbError
 
 }
 
-func DeleteThread(account *accounts.Account, tid uint64) (error, *pberrors.PbError) {
+func DeleteThread(acc *postbar.Account, tid uint64) (error, *pberrors.PbError) {
 	var parameters http.Parameters
 
-	tbs, err, pberr := account.GetTbs()
+	tbs, err, pberr := GetTbs(acc)
 	if err != nil {
 		return err, nil
 	} else if pberr != nil {
@@ -49,7 +49,7 @@ func DeleteThread(account *accounts.Account, tid uint64) (error, *pberrors.PbErr
 
 	parameters.Add("z", strconv.FormatUint(tid, 10))
 
-	accounts.ProcessParams(&parameters, account)
+	postbar.ProcessParams(&parameters, acc)
 	resp, err := http.Post("http://c.tieba.baidu.com/c/c/bawu/delthread", parameters)
 
 	if err != nil {
@@ -98,7 +98,7 @@ func BlockIDWeb(BDUSS string,
 
 /*
 //有问题
-func CommitPrison(account *accounts.Account,
+func CommitPrison(account *postbar.Account,
 	forumName string, forumID uint64, userName string, threadID uint64,
 	day int, reason string) (error, *pberrors.PbError) {
 	var parameters http.Parameters

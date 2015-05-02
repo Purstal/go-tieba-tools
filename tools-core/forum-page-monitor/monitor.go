@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/purstal/pbtools/modules/postbar/accounts"
+	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/forum-win8-1.5.0.0"
 )
 
@@ -25,7 +25,7 @@ type ForumPage struct {
 	Extra      *forum.ForumPageExtra
 }
 
-func (monitor *ForumPageMonitor) ChangeAccount(accWin8 *accounts.Account) {
+func (monitor *ForumPageMonitor) ChangeAccount(accWin8 *postbar.Account) {
 	monitor.actChan <- action{"ChangeAccount", accWin8}
 }
 
@@ -37,7 +37,7 @@ func (monitor *ForumPageMonitor) Stop() {
 	monitor.actChan <- action{"Stop", nil}
 }
 
-func NewForumPageMonitor(accWin8 *accounts.Account, kw string,
+func NewForumPageMonitor(accWin8 *postbar.Account, kw string,
 	interval time.Duration) *ForumPageMonitor {
 
 	var monitor = ForumPageMonitor{}
@@ -67,7 +67,7 @@ func NewForumPageMonitor(accWin8 *accounts.Account, kw string,
 			case act := <-monitor.actChan:
 				switch act.action {
 				case "ChangeAccount":
-					accWin8 = act.param.(*accounts.Account)
+					accWin8 = act.param.(*postbar.Account)
 				case "ChangeInterval":
 					ticker.Stop()
 					ticker = time.NewTicker(act.param.(time.Duration))

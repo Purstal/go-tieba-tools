@@ -6,11 +6,11 @@ import (
 
 	"github.com/purstal/pbtools/modules/http"
 	"github.com/purstal/pbtools/modules/pberrors"
-	"github.com/purstal/pbtools/modules/postbar/accounts"
+	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/thread-win8-1.5.0.0"
 )
 
-func GetFloorJson(acc *accounts.Account, kz uint64,
+func RGetFloor(acc *postbar.Account, kz uint64,
 	isComment bool, id uint64, pn int) ([]byte, error) {
 	var parameters http.Parameters
 	parameters.Add("from", "tieba")
@@ -24,13 +24,13 @@ func GetFloorJson(acc *accounts.Account, kz uint64,
 		parameters.Add("pn", strconv.Itoa(pn))
 	}
 
-	accounts.ProcessParams(&parameters, acc)
+	postbar.ProcessParams(&parameters, acc)
 
 	resp, err := http.Post(`http://c.tieba.baidu.com/c/f/pb/floor`, parameters)
 	return resp, err
 }
 
-func GetFloorStruct(acc *accounts.Account, kz uint64,
+func GetFloorStruct(acc *postbar.Account, kz uint64,
 	isComment bool, id uint64, pn int) (*thread.ThreadPage,
 	*thread.ThreadPagePost, []FloorPageComment,
 	*FloorPageExtra, error, *pberrors.PbError) {

@@ -7,10 +7,10 @@ import (
 
 	"github.com/purstal/pbtools/modules/http"
 	"github.com/purstal/pbtools/modules/pberrors"
-	"github.com/purstal/pbtools/modules/postbar/accounts"
+	"github.com/purstal/pbtools/modules/postbar"
 )
 
-func GetThreadJson(acc *accounts.Account, kz uint64, mark bool, pid uint64, pn, rn int,
+func RGetThread(acc *postbar.Account, kz uint64, mark bool, pid uint64, pn, rn int,
 	withFloor, seeLz, r bool) ([]byte, error) {
 	var parameters http.Parameters
 
@@ -42,13 +42,13 @@ func GetThreadJson(acc *accounts.Account, kz uint64, mark bool, pid uint64, pn, 
 	}
 	//parameters.Add("last", "1")       //?
 
-	accounts.ProcessParams(&parameters, acc)
+	postbar.ProcessParams(&parameters, acc)
 
 	return http.Post(`http://c.tieba.baidu.com/c/f/pb/page`, parameters)
 
 }
 
-func GetThreadStruct(acc *accounts.Account, kz uint64, mark bool, pid uint64, pn, rn int,
+func GetThreadStruct(acc *postbar.Account, kz uint64, mark bool, pid uint64, pn, rn int,
 	withFloor, seeLz, r bool) (*ThreadPage, []ThreadPagePost,
 	*ThreadPageExtra, error, *pberrors.PbError) {
 

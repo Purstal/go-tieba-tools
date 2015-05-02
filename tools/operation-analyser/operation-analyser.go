@@ -6,20 +6,92 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/BurntSushi/toml"
 
-	"github.com/purstal/pbtools/modules/postbar/accounts"
+	"github.com/purstal/pbtools/modules/postbar"
+	"github.com/purstal/pbtools/modules/postbar/apis"
 
 	old "github.com/purstal/pbtools/tools-core/operation-analyser/old/caozuoliang"
 	"github.com/purstal/pbtools/tools-core/operation-analyser/old/inireader"
 	"github.com/purstal/pbtools/tools-core/operation-analyser/old/log"
 
 	analyser "github.com/purstal/pbtools/tools-core/operation-analyser"
+	"github.com/purstal/pbtools/tools/operation-analyser/csv"
 )
+
+const VERSION = "1.7"
+
+func analyse(datas []analyser.DayData) {
+	var bawuTotal = make(map[string]int)
+	var hourCounts = make([][24]map[string]int, len(datas))
+
+	for i, data := range datas {
+		for j := 0; j < 24; j++ {
+			hourCounts[i][j] = make(map[string]int)
+		}
+		for _, log := range data.Logs {
+			hourCounts[i][log.OperationTime.Hour][log.Operator]++
+			bawuTotal[log.Operator]++
+		}
+	}
+	var records sorter
+
+	for bawu, count := range bawuTotal {
+		records = append(records, record{bawu, count})
+	}
+
+	sort.Sort(records)
+
+	var table = make([][]string, len(datas)*30+1)
+
+	for i, _ := range table {
+		table[i] = make([]string, len(records)+1)
+	}
+
+	for i, record := range records {
+		table[0][i+1] = record.userName
+	}
+
+	for day, counts := range hourCounts {
+		t := time.Unix(datas[day].Time, 0)
+		for hour, countMap := range counts {
+			row := &table[1+24*day+hour]
+			(*row)[0] = t.Format("2006-01-02 15:00")
+			t = t.Add(time.Hour)
+			for i, record := range records {
+				(*row)[1+i] = strconv.Itoa(countMap[record.userName])
+			}
+		}
+	}
+
+	f, _ := os.Create("result.csv")
+	csv.NewWriter(f).WriteAll(table)
+
+}
+
+type record struct {
+	userName string
+	count    int
+}
+
+type sorter []record
+
+func (s sorter) Less(i, j int) bool {
+	return s[i].count > s[j].count
+}
+
+func (s sorter) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s sorter) Len() int {
+	return len(s)
+}
 
 func main() {
 	_main()
@@ -86,7 +158,7 @@ func _main() {
 
 	log.INIT_LOG(config.Log.Log1, config.Log.Log2, config.Log.Log3)
 
-	log.Loglog("百度贴吧操作量统计工具 by purstal " + old.Version)
+	log.Loglog("百度贴吧操作量统计工具 by purstal " + VERSION)
 
 	var config_json, _ = json.Marshal(config)
 	log.Loglog("flag =", os.Args[1:])
@@ -176,91 +248,6 @@ func _main() {
 
 }
 
-func analyse(datas []analyser.DayData) {
-	单吧务删贴恢复量(datas, "vc咖啡")
-}
-
-func 单吧务每日删贴量(datas []analyser.DayData, userName string) {
-	for _, data := range datas {
-		var count int
-		for _, log := range data.Logs {
-			if log.Operator == userName && log.OperationType == analyser.OpType_Delete {
-				count++
-			}
-		}
-		if count != 0 {
-			fmt.Println(time.Unix(data.Time, 0).Format("2006-01-02"), count)
-		}
-	}
-}
-
-func 单吧务删贴恢复量(datas []analyser.DayData, userName string) {
-
-	var deletedMap = make(map[int]bool)
-	for _, data := range datas {
-		var deleteCount, recoverCount int
-		for _, log := range data.Logs {
-			if log.Operator == userName && log.OperationType == analyser.OpType_Delete {
-				deletedMap[log.TID] = true
-				deleteCount++
-			} else if log.OperationType == analyser.OpType_Recover && deletedMap[log.TID] {
-				recoverCount++
-			}
-		}
-		if deleteCount+recoverCount != 0 {
-			fmt.Println(time.Unix(data.Time, 0).Format("2006-01-02"), deleteCount, recoverCount)
-		}
-	}
-
-}
-
-func 每日总操作量(datas []analyser.DayData) {
-	type day struct {
-		day string
-		count_d, count_r,
-		count_at, count_ag,
-		count_ct, count_cg,
-		unknown int
-	}
-
-	for _, data := range datas {
-		var today day
-		today.day = time.Unix(data.Time, 0).Format("2006-01-02")
-		for _, log := range data.Logs {
-			switch log.OperationType {
-			case analyser.OpType_Delete:
-				today.count_d++
-			case analyser.OpType_Recover:
-				today.count_r++
-			case analyser.OpType_AddTop:
-				today.count_at++
-			case analyser.OpType_AddGood:
-				today.count_ag++
-			case analyser.OpType_CancelTop:
-				today.count_ct++
-			case analyser.OpType_CancelGood:
-				today.count_cg++
-			default:
-				today.unknown++
-			}
-		}
-		fmt.Println(today.day, today.count_d, today.count_r, today.count_at,
-			today.count_ag, today.count_ct, today.count_cg, today.unknown)
-	}
-}
-
-func 吧务删贴总量(datas []analyser.DayData) {
-	var opCount = make(map[string]int)
-	for _, data := range datas {
-		for _, log := range data.Logs {
-			if log.OperationType == analyser.OpType_Delete {
-				opCount[log.Operator]++
-			}
-		}
-	}
-	fmt.Println(opCount)
-}
-
 func ReadFile(fileName string) ([]byte, error) {
 	var data, err = ioutil.ReadFile(fileName)
 
@@ -283,7 +270,7 @@ func checkAccount(accountMap map[string]*Account) {
 	for userName, value := range accountMap {
 	RETRY:
 		if value.BDUSS != "" {
-			if isLogin, err := accounts.IsLogin(value.BDUSS); err == nil && isLogin {
+			if isLogin, err := apis.IsLogin(value.BDUSS); err == nil && isLogin {
 				log.Loglog("用户", userName, "BDUSS验证成功")
 				continue
 			} else {
@@ -294,8 +281,8 @@ func checkAccount(accountMap map[string]*Account) {
 		} else if value.Password == "" {
 			log.Loglog("用户", userName, "没有有效的BDUSS,且没有设置密码,登录失败")
 		} else {
-			var acc = accounts.NewDefaultWindows8Account(userName)
-			var err, pberr = acc.Login(value.Password)
+			var acc = postbar.NewDefaultWindows8Account(userName)
+			var err, pberr = apis.Login(acc, value.Password)
 			if err != nil || (pberr != nil && pberr.ErrorCode != 0) {
 				log.Loglog("用户", userName, "登录失败:", err.Error(), pberr)
 			} else {
@@ -453,8 +440,8 @@ func oldVersion(taskFileName string, accountMap map[string]*Account, config *Con
 
 }
 
-func findAvailableBDUSS(forumName string, accountMap map[string]*Account, accounts []string) string {
-	for _, account := range accounts {
+func findAvailableBDUSS(forumName string, accountMap map[string]*Account, postbar []string) string {
+	for _, account := range postbar {
 		if accountMap[account] != nil && accountMap[account].BDUSS != "" {
 			var doc = analyser.TryGettingListingPostLogDocument(accountMap[account].BDUSS, forumName, "", analyser.OpType_None, 0, 0, 1)
 			if analyser.CanViewBackstage(doc) {

@@ -1,55 +1,38 @@
-package accounts
+package apis
 
 import (
 	"encoding/json"
 
+	"github.com/purstal/pbtools/modules/http"
 	"github.com/purstal/pbtools/modules/misc"
 	"github.com/purstal/pbtools/modules/pberrors"
+	"github.com/purstal/pbtools/modules/postbar"
 )
 
-type Account struct {
-	ID string
-
-	BDUSS string
-
-	NetType       string
-	ClientType    string
-	ClientID      string
-	ClientVersion string
-	PhoneIMEI     string
+func RGetTbs(acc *postbar.Account) ([]byte, error) {
+	var parameters http.Parameters
+	postbar.ProcessParams(&parameters, acc)
+	return http.Post(`http://c.tieba.baidu.com/c/s/tbs`, parameters)
 }
 
-const (
-	Windows8 = `4`
-	Android  = `2`
-)
-
-func NewDefaultAndroidAccount(id string) *Account {
-	return &Account{
-		ID:            id,
-		NetType:       ``,
-		ClientType:    Android,
-		ClientID:      ``,
-		ClientVersion: `6.1.3`,
-		PhoneIMEI:     misc.ComputeMD5(``), //...
-	}
+func RGetTbsWeb(BDUSS string) ([]byte, error) {
+	var cookies http.Cookies
+	cookies.Add("BDUSS", BDUSS)
+	return http.Get(`http://tieba.baidu.com/dc/common/tbs`, nil, cookies)
 
 }
 
-func NewDefaultWindows8Account(id string) *Account {
-	return &Account{
-		ID:         id,
-		NetType:    `3`,
-		ClientType: Windows8,
-		ClientID:   `4C-07-16-00-F1-C0-5B-47-62-86-B7-35-AF-24-24-DB-E7-05-86-8B-BF-E6-A4-06-B2-54-E3-AB-81-2D-9D-32`,
-		//Maribel Hearn ↑
-		ClientVersion: `1.5.0.0`,
-		PhoneIMEI:     misc.ComputeMD5(``),
-	}
+func RLogin(acc *postbar.Account, username, password string) ([]byte, error) {
+
+	var parameters http.Parameters
+	parameters.Add("un", username)
+	parameters.Add("passwd", misc.ComputeBase64(password))
+	postbar.ProcessParams(&parameters, acc)
+	return http.Post("http://c.tieba.baidu.com/c/s/login", parameters)
 }
 
-func (acc *Account) GetTbs() (string, error, *pberrors.PbError) {
-	resp, err := GetTbs(acc)
+func GetTbs(acc *postbar.Account) (string, error, *pberrors.PbError) {
+	resp, err := RGetTbs(acc)
 	if err != nil {
 		return "", err, nil
 	}
@@ -66,12 +49,11 @@ func (acc *Account) GetTbs() (string, error, *pberrors.PbError) {
 		return "", nil, pberrors.NewPbError(x.ErrorCode, x.ErrorMsg)
 	}
 	return x.Tbs, nil, nil
-
 }
 
-func (acc *Account) Login(password string) (error, *pberrors.PbError) {
+func Login(acc *postbar.Account, password string) (error, *pberrors.PbError) {
 	//resp, err := APILogin(acc, acc.ID, password)
-	resp, err := Login(acc, acc.ID, password)
+	resp, err := RLogin(acc, acc.ID, password)
 	if err != nil {
 		return err, nil
 	}
@@ -96,7 +78,7 @@ func (acc *Account) Login(password string) (error, *pberrors.PbError) {
 }
 
 func IsLogin(BDUSS string) (bool, error) {
-	resp, err := GetTbsWeb(BDUSS)
+	resp, err := RGetTbsWeb(BDUSS)
 	if err != nil {
 		return false, err
 	}
@@ -109,8 +91,4 @@ func IsLogin(BDUSS string) (bool, error) {
 		return false, err2
 	}
 	return x.IsLogin == 1, nil
-}
-
-func (acc *Account) IsLogin() (bool, error) {
-	return IsLogin(acc.BDUSS)
 }

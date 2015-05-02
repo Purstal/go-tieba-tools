@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/purstal/pbtools/modules/postbar/accounts"
+	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/advsearch"
 	"github.com/purstal/pbtools/modules/postbar/apis"
 	"github.com/purstal/pbtools/modules/postbar/forum-win8-1.5.0.0"
@@ -18,15 +18,15 @@ const (
 	Continue Control = 1
 )
 
-type ThreadAssessor func(account *accounts.Account, thread *ForumPageThread) Control
-type AdvSearchAssessor func(account *accounts.Account, result *advsearch.AdvSearchResult) Control
-type PostAssessor func(account *accounts.Account, post *ThreadPagePost)
-type CommentAssessor func(account *accounts.Account, comment *FloorPageComment)
+type ThreadAssessor func(account *postbar.Account, thread *ForumPageThread) Control
+type AdvSearchAssessor func(account *postbar.Account, result *advsearch.AdvSearchResult) Control
+type PostAssessor func(account *postbar.Account, post *ThreadPagePost)
+type CommentAssessor func(account *postbar.Account, comment *FloorPageComment)
 
 type PostFinder struct {
 	FreshPostMonitor        *monitor.FreshPostMonitor
 	ServerTime              time.Time
-	AccWin8, AccAndr        *accounts.Account
+	AccWin8, AccAndr        *postbar.Account
 	ForumName               string
 	Fid                     uint64
 	ThreadFilter            ThreadAssessor
@@ -37,7 +37,7 @@ type PostFinder struct {
 	CommentAssessor         CommentAssessor
 	SearchTaskManager       *SearchTaskManager
 
-	//Abandon...
+	//Abandon
 
 	Debugger *Debugger
 	Debug    struct {
@@ -50,7 +50,7 @@ func init() {
 	InitDebugger()
 }
 
-func NewPostFinder(accWin8, accAndr *accounts.Account, forumName string, yield func(*PostFinder)) *PostFinder {
+func NewPostFinder(accWin8, accAndr *postbar.Account, forumName string, yield func(*PostFinder)) *PostFinder {
 	var postFinder PostFinder
 	postFinder.Debug.StartTime = time.Now()
 

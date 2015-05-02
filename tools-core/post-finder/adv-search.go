@@ -6,7 +6,7 @@ import (
 	"time"
 	//"unsafe"
 
-	"github.com/purstal/pbtools/modules/postbar/accounts"
+	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/advsearch"
 	floor "github.com/purstal/pbtools/modules/postbar/floor-andr-6.1.3"
 	//forum "github.com/purstal/pbtools/modules/advsearch/forum-win8-1.5.0.0"
@@ -211,7 +211,7 @@ type FloorPage struct {
 	Extra       *floor.FloorPageExtra
 }
 
-func TryGettingFloorPageStruct(accWin8 *accounts.Account, kz uint64,
+func TryGettingFloorPageStruct(accWin8 *postbar.Account, kz uint64,
 	isComment bool, id uint64, pn int) (*FloorPage, *pberrors.PbError) {
 	for i, err_count := 0, 0; ; {
 		tp, tpp, fpcs, fpe, err, pberr := floor.GetFloorStruct(accWin8, kz, isComment, id, pn)
@@ -249,7 +249,7 @@ func TryGettingFloorPageStruct(accWin8 *accounts.Account, kz uint64,
 	}
 }
 
-func TryGettingFloorPageStruct2(accWin8 *accounts.Account, kz uint64,
+func TryGettingFloorPageStruct2(accWin8 *postbar.Account, kz uint64,
 	isComment bool, id uint64, pn int) (*FloorPage, bool) {
 	//fmt.Println("TryGettingFloorPageStruct2")
 

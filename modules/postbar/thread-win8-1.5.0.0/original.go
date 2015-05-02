@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/purstal/pbtools/modules/pberrors"
-	"github.com/purstal/pbtools/modules/postbar/accounts"
+	"github.com/purstal/pbtools/modules/postbar"
 )
 
 type OriginalThreadStruct struct {
@@ -48,9 +48,9 @@ type OriginalThreadStruct struct {
 	ErrorMsg  string `json:"error_msg"`
 }
 
-func GetOriginalThreadStruct(acc *accounts.Account, kz uint64, mark bool, pid uint64, pn, rn int,
+func GetOriginalThreadStruct(acc *postbar.Account, kz uint64, mark bool, pid uint64, pn, rn int,
 	withFloor, seeLz, r bool) (*OriginalThreadStruct, error, *pberrors.PbError) {
-	resp, err := GetThreadJson(acc, kz, mark, pid, pn, rn, withFloor, seeLz, r)
+	resp, err := RGetThread(acc, kz, mark, pid, pn, rn, withFloor, seeLz, r)
 
 	if err != nil {
 		return nil, err, nil
