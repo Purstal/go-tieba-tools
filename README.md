@@ -49,4 +49,10 @@ https://github.com/Purstal/pbtools/tree/master/tools-core/operation-analyser
 ####本体:####
 https://github.com/Purstal/pbtools/tree/master/tools/operation-analyser
 
+#依赖#
+github.com/PuerkitoBio/goquery<br/>
+code.google.com/p/mahonia<br/>
+github.com/BurntSushi/toml<br/>
+
+
 <!--兔子我喜欢你!-->
