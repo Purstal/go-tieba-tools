@@ -163,13 +163,13 @@ func makeTable(records []*UpdateRecord, recordType string) [][]string {
 		var columnA string
 		switch recordType {
 		case "小时记录":
-			columnA = records[i].Time.Format("2006年01月02日 15时")
+			columnA = records[i].Time.Format("2006-01-02 15:00")
 		case "日记录":
-			columnA = records[i].Time.Format("2006年01月02日")
+			columnA = records[i].Time.Format("2006-01-02")
 		case "周记录":
-			columnA = records[i].Time.Format("2006年01月02周")
+			columnA = records[i].Time.Format("2006-01-02")
 		case "月记录":
-			columnA = records[i].Time.Format("2006年01月")
+			columnA = records[i].Time.Format("2006-01")
 		}
 		var rate string
 		if records[i].TextCount != 0 {
