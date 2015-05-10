@@ -11,7 +11,7 @@ import (
 
 func main() {
 	if len(os.Args) != 3 {
-		panic("用法不对.")
+		panic("Incorrect Usage.")
 	}
 
 	b, err := ioutil.ReadFile("thread-list")
