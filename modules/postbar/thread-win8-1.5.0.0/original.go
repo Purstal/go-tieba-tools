@@ -48,9 +48,9 @@ type OriginalThreadStruct struct {
 	ErrorMsg  string `json:"error_msg"`
 }
 
-func GetOriginalThreadStruct(acc *postbar.Account, kz uint64, mark bool, pid uint64, pn, rn int,
+func GetOriginalThreadStruct(acc *postbar.Account, tid uint64, mark bool, pid uint64, pn, rn int,
 	withFloor, seeLz, r bool) (*OriginalThreadStruct, error, *pberrors.PbError) {
-	resp, err := RGetThread(acc, kz, mark, pid, pn, rn, withFloor, seeLz, r)
+	resp, err := RGetThread(acc, tid, mark, pid, pn, rn, withFloor, seeLz, r)
 
 	if err != nil {
 		return nil, err, nil

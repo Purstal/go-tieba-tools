@@ -10,11 +10,11 @@ import (
 	"github.com/purstal/pbtools/modules/postbar/thread-win8-1.5.0.0"
 )
 
-func RGetFloor(acc *postbar.Account, kz uint64,
+func RGetFloor(acc *postbar.Account, tid uint64,
 	isComment bool, id uint64, pn int) ([]byte, error) {
 	var parameters http.Parameters
 	parameters.Add("from", "tieba")
-	parameters.Add("kz", strconv.FormatUint(kz, 10))
+	parameters.Add("kz", strconv.FormatUint(tid, 10))
 	if isComment {
 		parameters.Add("spid", strconv.FormatUint(id, 10))
 	} else {
@@ -30,12 +30,12 @@ func RGetFloor(acc *postbar.Account, kz uint64,
 	return resp, err
 }
 
-func GetFloorStruct(acc *postbar.Account, kz uint64,
+func GetFloorStruct(acc *postbar.Account, tid uint64,
 	isComment bool, id uint64, pn int) (*thread.ThreadPage,
 	*thread.ThreadPagePost, []FloorPageComment,
 	*FloorPageExtra, error, *pberrors.PbError) {
 
-	ofp, err, pberr := GetOriginalFloorStruct(acc, kz, isComment, id, pn)
+	ofp, err, pberr := GetOriginalFloorStruct(acc, tid, isComment, id, pn)
 
 	if err != nil {
 		return nil, nil, nil, nil, err, nil

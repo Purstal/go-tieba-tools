@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+
+	"github.com/purstal/pbtools/tools-core/utils"
 )
 
 type DayData struct {
@@ -316,64 +318,28 @@ func scanOneDay(BDUSS, forumName string, fromTime, toTime int64, maxThreadNumber
 
 	var totalPage = (logCount-1)/30 + 1
 
-	var scanFinishChan = make(chan bool)
+	if totalPage >= 2 {
+		TryGettingAndExtractLogs(BDUSS, forumName, "", OpType_None, fromTime, toTime, totalPage, logs, logCount-(totalPage-1)*30)
+	}
 
 	if totalPage > 2 {
-		var requireChan, doChan, finishChan = make(chan bool), make(chan bool), make(chan bool)
 
-		go func() {
-			var runningNumber int
-			var requireNumber int
-			var finished int
-			for {
-				select {
-				case <-requireChan:
-					if runningNumber < maxThreadNumber {
-						doChan <- true
-						runningNumber++
-					} else {
-						requireNumber++
-					}
-				case <-finishChan:
-					finished++
-					if finished == totalPage-2 {
-						for i := 0; i < requireNumber; i++ {
-							doChan <- false
-						}
-						close(requireChan)
-						close(doChan)
-						close(finishChan)
-						scanFinishChan <- true
-						return
-					}
-					if requireNumber > 0 {
-						doChan <- true
-						requireNumber--
-					} else {
-						runningNumber--
-					}
-				}
-			}
-		}()
+		tm := utils.NewThreadManager(maxThreadNumber, totalPage-2)
 
 		go func() {
 			for i := 1; i < totalPage-1; i++ { //第一页最后一页单算
-				requireChan <- true
-				if <-doChan {
+				tm.RequireChan <- true
+				if <-tm.DoChan {
 					go func() {
 						TryGettingAndExtractLogs(BDUSS, forumName, "", OpType_None, fromTime, toTime, i, logs, 30)
-						finishChan <- true
+						tm.FinishChan <- true
 					}()
 
 				}
 			}
 		}()
+		<-tm.AllTaskFinishedChan
 	}
-	if totalPage >= 2 {
-		TryGettingAndExtractLogs(BDUSS, forumName, "", OpType_None, fromTime, toTime, totalPage, logs, logCount-(totalPage-1)*30)
-	}
-
-	<-scanFinishChan
 	return logs
 
 }

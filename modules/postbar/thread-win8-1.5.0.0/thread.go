@@ -10,11 +10,11 @@ import (
 	"github.com/purstal/pbtools/modules/postbar"
 )
 
-func RGetThread(acc *postbar.Account, kz uint64, mark bool, pid uint64, pn, rn int,
+func RGetThread(acc *postbar.Account, tid uint64, mark bool, pid uint64, pn, rn int,
 	withFloor, seeLz, r bool) ([]byte, error) {
 	var parameters http.Parameters
 
-	parameters.Add("kz", strconv.FormatUint(kz, 10)) //贴号
+	parameters.Add("kz", strconv.FormatUint(tid, 10))
 
 	if mark {
 		parameters.Add("mark", "1") //1:定位楼层
@@ -48,11 +48,11 @@ func RGetThread(acc *postbar.Account, kz uint64, mark bool, pid uint64, pn, rn i
 
 }
 
-func GetThreadStruct(acc *postbar.Account, kz uint64, mark bool, pid uint64, pn, rn int,
+func GetThreadStruct(acc *postbar.Account, tid uint64, mark bool, pid uint64, pn, rn int,
 	withFloor, seeLz, r bool) (*ThreadPage, []ThreadPagePost,
 	*ThreadPageExtra, error, *pberrors.PbError) {
 
-	otp, err, pberr := GetOriginalThreadStruct(acc, kz, mark, pid, pn, rn, withFloor, seeLz, r)
+	otp, err, pberr := GetOriginalThreadStruct(acc, tid, mark, pid, pn, rn, withFloor, seeLz, r)
 
 	if err != nil {
 		return nil, nil, nil, err, nil
@@ -66,6 +66,7 @@ func GetThreadStruct(acc *postbar.Account, kz uint64, mark bool, pid uint64, pn,
 	}
 
 	var tp ThreadPage
+
 	var postList []ThreadPagePost = make([]ThreadPagePost, len(otp.PostList))
 
 	tp.Tid = otp.Thread.ID

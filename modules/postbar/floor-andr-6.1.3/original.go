@@ -58,9 +58,9 @@ type OriginalFloorStruct struct {
 	ErrorMsg  string `json:"error_msg"`
 }
 
-func GetOriginalFloorStruct(acc *postbar.Account, kz uint64,
+func GetOriginalFloorStruct(acc *postbar.Account, tid uint64,
 	isComment bool, id uint64, pn int) (*OriginalFloorStruct, error, *pberrors.PbError) {
-	resp, err := RGetFloor(acc, kz, isComment, id, pn)
+	resp, err := RGetFloor(acc, tid, isComment, id, pn)
 
 	if err != nil {
 		return nil, err, nil
