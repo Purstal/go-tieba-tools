@@ -20,7 +20,10 @@ func main() {
 	http.RetryTimes = 1
 	http.ShutUp = true
 
-	usage := fmt.Sprintf("usage:\n%s tid from to\nfrom&to:时间,格式如:`2006-01-02`\n", os.Args[0])
+	usage := fmt.Sprintf(`usage:
+%s $tid $from-time $to-time
+
+$from-time $to-time: 如 2006-01-02`, os.Args[0])
 	if len(os.Args) != 4 {
 		fmt.Println(usage)
 		return
@@ -54,7 +57,7 @@ func main() {
 
 	tx := CollectPost(tid, fromTime, toTime, 10)
 
-	var dir = "scaned-thread/"
+	var dir = "scanned-thread/"
 	os.MkdirAll(dir, 0644)
 	f, err := os.Create(dir + strconv.FormatUint(tid, 10) + time.Now().Format("[20060102-150304].json"))
 	if err != nil {
