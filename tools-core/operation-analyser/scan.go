@@ -326,18 +326,18 @@ func scanOneDay(BDUSS, forumName string, fromTime, toTime int64, maxThreadNumber
 
 		tm := utils.NewThreadManager(maxThreadNumber, totalPage-2)
 
-		go func() {
-			for i := 1; i < totalPage-1; i++ { //第一页最后一页单算
-				tm.RequireChan <- true
-				if <-tm.DoChan {
-					go func() {
-						TryGettingAndExtractLogs(BDUSS, forumName, "", OpType_None, fromTime, toTime, i, logs, 30)
-						tm.FinishChan <- true
-					}()
+		//go func() {
+		for i := 1; i < totalPage-1; i++ { //第一页最后一页单算
+			tm.RequireChan <- true
+			if <-tm.DoChan {
+				go func(i int) {
+					TryGettingAndExtractLogs(BDUSS, forumName, "", OpType_None, fromTime, toTime, i, logs, 30)
+					tm.FinishChan <- true
+				}(i)
 
-				}
 			}
-		}()
+		}
+		//}()
 		<-tm.AllTaskFinishedChan
 	}
 	return logs

@@ -39,6 +39,7 @@ func NewThreadManager(maxThreadNumber, totalTaskCount int) *ThreadManager {
 					close(m.DoChan)
 					close(m.FinishChan)
 					m.AllTaskFinishedChan <- true
+					close(m.AllTaskFinishedChan)
 					return
 				}
 				if m.WaitingCount > 0 {
