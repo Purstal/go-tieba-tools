@@ -84,15 +84,15 @@ type Log struct {
 	PostTime struct {
 		Month, Day, Hour, Minute int
 	}
-	Title         string
-	IsReply       bool
-	Text          string
-	MediaHtml     string
-	TID           int
-	PID           int
-	OperationType OpType
-	Operator      string
-	OperationTime struct {
+	Title       string
+	IsReply     bool
+	Text        string
+	MediaHtml   string
+	TID         int
+	PID         int
+	OperateType OpType
+	Operator    string
+	OperateTime struct {
 		Year, Month, Day, Hour, Minute int
 	}
 }
@@ -111,7 +111,8 @@ func ExtractLogs(doc *goquery.Document, logs []Log, fromIndex, toIndex int) (tru
 	}
 
 	logTrs.Each(func(i int, tr *goquery.Selection) {
-		var log = &logs[fromIndex+i]
+		//var log = &logs[fromIndex+i]
+		var log = &logs[fromIndex+i] //
 		if len(logs) <= fromIndex+i {
 			panic(fmt.Sprintln(len(logs), fromIndex+i, fromIndex, toIndex))
 		}
@@ -122,7 +123,7 @@ func ExtractLogs(doc *goquery.Document, logs []Log, fromIndex, toIndex int) (tru
 			&log.PostTime.Hour, &log.PostTime.Minute)
 		var contentSel = tr.Find(`div.post_content`)
 		var a = contentSel.Find(`h1`).Find(`a`)
-		var title = a.Text()
+		var title = strings.TrimSpace(a.Text())
 		if strings.HasPrefix(title, "回复：") {
 			log.IsReply = true
 			log.Title = strings.TrimPrefix(title, "回复：")
@@ -132,7 +133,7 @@ func ExtractLogs(doc *goquery.Document, logs []Log, fromIndex, toIndex int) (tru
 		var herf, _ = a.Attr(`href`)
 		fmt.Sscanf(herf, "/p/%d?pid=%d", &log.TID, &log.PID)
 
-		log.Text = contentSel.Find(`div.post_text`).Text()
+		log.Text = strings.TrimSpace(contentSel.Find(`div.post_text`).Text())
 		var mediaHtml, _ = contentSel.Find(`div.post_media`).Html()
 		if strings.TrimSpace(log.MediaHtml) != "" {
 			log.MediaHtml = mediaHtml
@@ -141,19 +142,19 @@ func ExtractLogs(doc *goquery.Document, logs []Log, fromIndex, toIndex int) (tru
 		var td2 = tr.Find(`td`).Next()
 		switch td2.Find(`span`).Text() {
 		case "删贴":
-			log.OperationType = OpType_Delete
+			log.OperateType = OpType_Delete
 		case "恢复":
-			log.OperationType = OpType_Recover
+			log.OperateType = OpType_Recover
 		case "加精":
-			log.OperationType = OpType_AddGood
+			log.OperateType = OpType_AddGood
 		case "取消加精":
-			log.OperationType = OpType_CancelGood
+			log.OperateType = OpType_CancelGood
 		case "置顶":
-			log.OperationType = OpType_AddTop
+			log.OperateType = OpType_AddTop
 		case "取消置顶":
-			log.OperationType = OpType_CancelTop
+			log.OperateType = OpType_CancelTop
 		default:
-			log.OperationType = OpType_None
+			log.OperateType = OpType_None
 		}
 
 		var td3 = td2.Next()
@@ -163,9 +164,9 @@ func ExtractLogs(doc *goquery.Document, logs []Log, fromIndex, toIndex int) (tru
 		var td4Html, _ = td4.Html()
 		fmt.Sscanf(td4Html,
 			`%d-%d-%d<br/>%d:%d`,
-			&log.OperationTime.Year,
-			&log.OperationTime.Month, &log.OperationTime.Day,
-			&log.OperationTime.Hour, &log.OperationTime.Minute)
+			&log.OperateTime.Year,
+			&log.OperateTime.Month, &log.OperateTime.Day,
+			&log.OperateTime.Hour, &log.OperateTime.Minute)
 	})
 
 	return true

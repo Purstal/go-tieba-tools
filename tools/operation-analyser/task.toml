@@ -8,8 +8,8 @@
     ForumName = "minecraft"
 
     #开始扫描时间 #2013-8-5
-    BeginDate = "2014-1-1"
+    BeginDate = "2015-3-1"
 
     #结束扫描时间
-    EndDate = "2014-1-2"
+    EndDate = "2015-5-14"
     #
