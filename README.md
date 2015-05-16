@@ -23,7 +23,7 @@ https://github.com/Purstal/pbtools/tree/master/modules/postbar/floor-andr-6.1.3/
 
 ##工具##
 
-###**简易的删贴机:**###
+###简易的删贴机:###
 可以按照自己的需求修改
 ####核心部分:####
 * 首页监控:
@@ -35,7 +35,7 @@ https://github.com/Purstal/pbtools/tree/master/tools-core/post-finder
 V ?.?
 https://github.com/Purstal/pbtools/tree/master/tools/simple-post-deleter
 
-###**操作量统计:**###
+###操作量统计:###
 V 1.7
 新版懒得写分析部分了,要让软件分析可以`-use-old-version`.
 但是每次分析都要扫描一遍.<br/>
@@ -53,6 +53,12 @@ https://github.com/Purstal/pbtools/tree/master/tools/operation-analyser
 github.com/PuerkitoBio/goquery<br/>
 code.google.com/p/mahonia<br/>
 github.com/BurntSushi/toml<br/>
+
+###其他:###
+
+* https://github.com/Purstal/pbtools/tree/master/tools/get-furank
+* https://github.com/Purstal/pbtools/tree/master/tools/post-analyser
+
 
 
 <!--5YWU5a2Q5oiR5Zac5qyi5L2gIQ==-->
