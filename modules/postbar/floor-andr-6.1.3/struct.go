@@ -38,7 +38,7 @@ type FloorPageCommentAuthor struct {
 
 func (a FloorPageCommentAuthor) AGetID() (bool, uint64)       { return true, a.ID }
 func (a FloorPageCommentAuthor) AGetName() string             { return a.Name }
-func (a FloorPageCommentAuthor) AGetLevel() (bool, uint8)     { return a.AGetLevel() }
+func (a FloorPageCommentAuthor) AGetLevel() (bool, uint8)     { return true, a.Level }
 func (a FloorPageCommentAuthor) AGetIsLike() (bool, bool)     { return false, false }
 func (a FloorPageCommentAuthor) AGetPortrait() (bool, string) { return true, a.Portrait }
 

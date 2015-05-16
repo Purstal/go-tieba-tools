@@ -19,7 +19,7 @@ import (
 	"github.com/purstal/pbtools/modules/postbar/advsearch"
 	"github.com/purstal/pbtools/modules/postbar/apis"
 	postfinder "github.com/purstal/pbtools/tools-core/post-finder"
-	"purstal/pbtools2/tools/pbutil"
+	//"purstal/pbtools2/tools/pbutil"
 )
 
 var accWin8 *postbar.Account
@@ -238,6 +238,8 @@ func CommentAssessor(account *postbar.Account, comment *postfinder.FloorPageComm
 
 }
 
+var tempForumID uint64
+
 func CommonAssess(from string, account *postbar.Account, post postbar.IPost, tid uint64) postfinder.Control {
 
 	_, uid := post.PGetAuthor().AGetID()
@@ -259,35 +261,39 @@ func CommonAssess(from string, account *postbar.Account, post postbar.IPost, tid
 		}
 
 	}
-	/*
-		url, err := pbutil.GetUserSignUrl(tid, pid)
-		if err == nil && url != "" {
-			res, err := http.Get(url)
-			if err == nil {
-				exp := regexp.MustCompile(`[0-9a-z]*\....\?`)
-				f, err := os.Create("debug/" + strings.TrimSuffix(exp.FindString(url), "?"))
-				if err != nil {
-					logs.Fatal(err)
 
-				} else {
-					io.Copy(f, res.Body)
+	author := post.PGetAuthor()
+
+	if from != "高级搜索" {
+		fmt.Println(from, author.AGetName(), ":", text)
+		if exist, level := author.AGetLevel(); exist {
+
+			if level == 1 && len(author.AGetName()) == 3 {
+				if tempForumID == 0 {
+					tempForumID, _, _ = apis.GetFid("minecraft")
 				}
-				if f != nil {
-					f.Close()
+				for {
+					err, pberr := apis.BlockIDWeb(account.BDUSS, tempForumID, author.AGetName(), post.PGetPid(), 1, "爆吧保护")
+					if err == nil {
+						fmt.Println(pberr, author.AGetName(), text)
+						return postfinder.Finish
+						break
+					}
+
 				}
-			} else {
-				logs.Fatal(err)
+
 			}
 		}
-	*/
-	//fmt.Println(ExtractText(post.PGetContentList()))
+
+	}
+
 	return postfinder.Continue
 }
 
 func useless() {
 	fmt.Println(io.EOF,
 		http.DefaultMaxHeaderBytes,
-		pbutil.DataFieldNotFoundError)
+	)
 
 }
 

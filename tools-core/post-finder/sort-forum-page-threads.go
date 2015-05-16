@@ -8,7 +8,6 @@ type PageThreadsSorter []forum.ForumPageThread
 
 func (sorter PageThreadsSorter) Len() int {
 	return len(sorter)
-
 }
 
 func (sorter PageThreadsSorter) Less(i, j int) bool {
