@@ -50,7 +50,7 @@ func init() {
 	InitDebugger()
 }
 
-func NewPostFinder(accWin8, accAndr *postbar.Account, forumName string, yield func(*PostFinder)) *PostFinder {
+func NewPostFinder(accWin8, accAndr *postbar.Account, forumName string, yield func(*PostFinder)) (*PostFinder, error) {
 	var postFinder PostFinder
 	postFinder.Debug.StartTime = time.Now()
 
@@ -69,7 +69,7 @@ func NewPostFinder(accWin8, accAndr *postbar.Account, forumName string, yield fu
 	fid, err, pberr := apis.GetFid(forumName)
 	if err != nil || pberr != nil {
 		Logger.Fatal("获取fid时出错: ", err, pberr)
-		return nil
+		return nil, err
 	}
 	postFinder.Fid = fid
 
@@ -84,7 +84,7 @@ func NewPostFinder(accWin8, accAndr *postbar.Account, forumName string, yield fu
 
 	postFinder.Debugger = NewDebugger(forumName, &postFinder, time.Second/4)
 
-	return &postFinder
+	return &postFinder, nil
 
 }
 

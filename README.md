@@ -53,6 +53,7 @@ https://github.com/Purstal/pbtools/tree/master/tools/operation-analyser
 github.com/PuerkitoBio/goquery<br/>
 code.google.com/p/mahonia<br/>
 github.com/BurntSushi/toml<br/>
+github.com/shiena/ansicolor<br/>
 
 ###其他:###
 

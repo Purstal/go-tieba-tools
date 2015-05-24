@@ -90,7 +90,7 @@ func _main() {
 		if logfile, err := os.Create(logDir + time.Now().Format("20060102-150405.log")); err != nil {
 			logs.Error("无法创建log文件,将不保存日志(可以尝试使用重定向保存日志).", err)
 		} else {
-			logs.DefaultLogger = logs.NewLogger(logs.DebugLevel, os.Stdout, logfile)
+			logs.SetDefaultLogger(logs.NewLogger(logs.DebugLevel, os.Stdout, logfile))
 		}
 	}
 

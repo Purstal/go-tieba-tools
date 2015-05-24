@@ -73,28 +73,27 @@ func (mux *MyMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		account = postbar.NewDefaultWindows8Account("")
 	case "Andr":
 		account = postbar.NewDefaultAndroidAccount("")
-	case "Custom":
-		account = postbar.NewDefaultWindows8Account("")
-		if net_type, exist := form[("net_type")]; exist {
-			delete(form, "net_type")
-			account.NetType = net_type
-		}
-		if _client_type, exist := form[("_client_type")]; exist {
-			delete(form, "_client_type")
-			account.ClientType = _client_type
-		}
-		if _client_id, exist := form[("_client_id")]; exist {
-			delete(form, "_client_id")
-			account.ClientID = _client_id
-		}
-		if _client_version, exist := form[("_client_version")]; exist {
-			delete(form, "_client_version")
-			account.ClientVersion = _client_version
-		}
-		if _phone_imei, exist := form[("_phone_imei")]; exist {
-			delete(form, "_phone_imei")
-			account.PhoneIMEI = _phone_imei
-		}
+	}
+
+	if net_type, exist := form[("net_type")]; exist {
+		delete(form, "net_type")
+		account.NetType = net_type
+	}
+	if _client_type, exist := form[("_client_type")]; exist {
+		delete(form, "_client_type")
+		account.ClientType = _client_type
+	}
+	if _client_id, exist := form[("_client_id")]; exist {
+		delete(form, "_client_id")
+		account.ClientID = _client_id
+	}
+	if _client_version, exist := form[("_client_version")]; exist {
+		delete(form, "_client_version")
+		account.ClientVersion = _client_version
+	}
+	if _phone_imei, exist := form[("_phone_imei")]; exist {
+		delete(form, "_phone_imei")
+		account.PhoneIMEI = _phone_imei
 	}
 
 	delete(form, "client")

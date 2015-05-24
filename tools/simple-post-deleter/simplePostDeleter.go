@@ -19,6 +19,7 @@ import (
 	"github.com/purstal/pbtools/modules/postbar/advsearch"
 	"github.com/purstal/pbtools/modules/postbar/apis"
 	postfinder "github.com/purstal/pbtools/tools-core/post-finder"
+	"github.com/purstal/pbtools/tools-core/utils/keyword-manager"
 	//"purstal/pbtools2/tools/pbutil"
 )
 
@@ -67,12 +68,16 @@ type Settings struct {
 var settings *Settings
 
 func main() {
-	os.MkdirAll("log/simpleLuaPostDeleter", 0777)
-	logfile, _ := os.Create("log/simplePostDeleter/" + time.Now().Format("20060102_150405"))
-	defer logfile.Close()
-	logs.DefaultLogger = logs.NewLogger(logs.DebugLevel, os.Stdout, logfile)
+	os.MkdirAll("log/simplePostDeleter", 0644)
+	logfile, err1 := os.Create("log/simplePostDeleter/" + time.Now().Format("20060102_150405"))
+	if err1 != nil {
+		logs.Fatal("无法创建log文件.", err1)
+	} else {
+		defer logfile.Close()
+	}
+
+	logs.SetDefaultLogger(logs.NewLogger(logs.DebugLevel, os.Stdout, logfile))
 	logs.DefaultLogger.LogWithTime = false
-	//logs.DefaultLogger = logs.NewLogger(0)
 	logs.Info("删贴机启动", time.Now())
 
 	keepUpdatingSettings()
@@ -81,27 +86,52 @@ func main() {
 		return
 	}
 
+	if settings.BDUSS == "" {
+		logs.Warn("未设置BDUSS.")
+	}
+
 	var accAndr = postbar.NewDefaultAndroidAccount("")
 	var accWin8 = postbar.NewDefaultWindows8Account("")
 	accWin8.BDUSS = settings.BDUSS
 	accAndr.BDUSS = settings.BDUSS
 
-	pd := postfinder.NewPostFinder(accWin8, accAndr, settings.ForumName, func(postfinder *postfinder.PostFinder) {
-		postfinder.ThreadFilter = ThreadFilter
-		postfinder.NewThreadFirstAssessor = NewThreadFirstAssessor
-		postfinder.NewThreadSecondAssessor = NewThreadSecondAssessor
-		postfinder.AdvSearchAssessor = AdvSearchAssessor
-		postfinder.PostAssessor = PostAssessor
-		postfinder.CommentAssessor = CommentAssessor
-	})
+	var pf *postfinder.PostFinder
 
-	if pd == nil {
-		return
+	{
+		var err error
+		if pf, err = postfinder.NewPostFinder(accWin8, accAndr, settings.ForumName, func(postfinder *postfinder.PostFinder) {
+			postfinder.ThreadFilter = ThreadFilter
+			postfinder.NewThreadFirstAssessor = NewThreadFirstAssessor
+			postfinder.NewThreadSecondAssessor = NewThreadSecondAssessor
+			postfinder.AdvSearchAssessor = AdvSearchAssessor
+			postfinder.PostAssessor = PostAssessor
+			postfinder.CommentAssessor = CommentAssessor
+		}); err != nil {
+			return
+		}
 	}
 
-	InitAssessor()
+	os.MkdirAll("log/simplePostDeleter/kewWordManager/", 0644)
+	kwManagerLogFile, err2 := os.Create("log/simplePostDeleter/kewWordManager/" + time.Now().Format("20060102_150405"))
+	if err2 != nil {
+		logs.Fatal("无法创建关键词的log文件.", err2)
+	} else {
+		defer kwManagerLogFile.Close()
+	}
+	kwManagerLogger := logs.NewLoggerWithName("关键词", logs.DebugLevel, os.Stdout, kwManagerLogFile)
 
-	pd.Run(time.Second)
+	if settings.PostContentRegexpFilePath != "" {
+		var err error
+		kwManager, err = kw_manager.NewKeywordManagerBidingWithFile(settings.PostContentRegexpFilePath, time.Second, kwManagerLogger)
+		if err != nil {
+			logs.Error("无法创建kwManager.", err)
+		}
+	} else {
+		kwManager = kw_manager.NewKeywordManager(kwManagerLogger)
+		logs.Warn("未设置正则关键词文件")
+	}
+
+	pf.Run(time.Second)
 
 	<-make(chan bool)
 
@@ -110,16 +140,31 @@ func main() {
 var 水楼Tids = make(map[uint64]bool)
 var 服务器楼Tids = make(map[uint64]bool)
 var 吧规Tids = make(map[uint64]bool)
-var 内容关键词 *[]*regexp.Regexp
+var kwManager *kw_manager.KeywordManager
 
-func InitAssessor() {
-	os.Mkdir("debug", 0777)
-	if settings.PostContentRegexpFilePath != "" {
-		内容关键词 = KeepUpdatingKeyWords(settings.PostContentRegexpFilePath)
-	} else {
-		内容关键词 = new([]*regexp.Regexp)
-		logs.Warn("未设置正则关键词文件")
+func CommonAssess(from string, account *postbar.Account, post postbar.IPost, tid uint64) postfinder.Control {
+
+	_, uid := post.PGetAuthor().AGetID()
+	pid := post.PGetPid()
+
+	if 水楼Tids[tid] {
+		logs.Debug(MakePrefix(nil, tid, pid, 0, uid), "水楼的贴子应该来不到这里,但是不知道为什么来了.")
+		return postfinder.Finish //防止水楼回复被删
 	}
+
+	//contentList := post.PGetContentList()
+	text := ExtractText(post.PGetContentList())
+
+	if matchedExp := 匹配正则组(kwManager.KeyWords(), text); matchedExp != "" {
+		return DeletePost(from, account, tid, pid, 0, uid, fmt.Sprint("内容匹配关键词:", matchedExp))
+	} else if math.Mod(float64(len(text)), 15.0) == 0 {
+		if match, _ := regexp.MatchString("[1十拾⑩①][5五伍⑤]字", text); match {
+			return DeletePost(from, account, tid, pid, 0, uid, fmt.Sprint("标准十五字", matchedExp))
+		}
+
+	}
+
+	return postfinder.Continue
 }
 
 func ThreadFilter(account *postbar.Account, thread *postfinder.ForumPageThread) postfinder.Control {
@@ -178,10 +223,10 @@ func AdvSearchAssessor(account *postbar.Account, result *advsearch.AdvSearchResu
 }
 
 func NewThreadFirstAssessor(account *postbar.Account, thread *postfinder.ForumPageThread) postfinder.Control {
-	//DebugLog("新主题第一次", thread.Thread.TGetContentList())
-	if matchedExp := 匹配正则组(*内容关键词, thread.Thread.Title); matchedExp != "" {
+	keyWords := kwManager.KeyWords()
+	if matchedExp := 匹配正则组(keyWords, thread.Thread.Title); matchedExp != "" {
 		return DeleteThread("主页页面", account, thread.Thread.Tid, 0, thread.Thread.Author.ID, fmt.Sprint("标题匹配关键词:", matchedExp))
-	} else if matchedExp := 匹配正则组(*内容关键词, ExtractText(thread.Thread.TGetContentList())); matchedExp != "" {
+	} else if matchedExp := 匹配正则组(keyWords, ExtractText(thread.Thread.TGetContentList())); matchedExp != "" {
 		return DeleteThread("主页页面", account, thread.Thread.Tid, 0, thread.Thread.Author.ID, fmt.Sprint("内容匹配关键词:", matchedExp))
 	}
 
@@ -199,12 +244,6 @@ func NewThreadSecondAssessor(account *postbar.Account, post *postfinder.ThreadPa
 	if CommonAssess("主题页面(新主题)", account, post.Post, post.Thread.Tid) == postfinder.Finish {
 		return
 	}
-
-	//DebugLog("新主题第二次", post.Post.PGetContentList())
-
-	//logs.Debug(MakePrefix(GetServerTimeFromExtra(post.Extra), post.Thread.Tid, post.Post.Pid, 0, post.Post.Author.ID),
-	//	"新主题") //, post.Thread.Title, post.Post.Author, post.Post.ContentList)
-
 }
 
 func PostAssessor(account *postbar.Account, post *postfinder.ThreadPagePost) {
@@ -238,66 +277,10 @@ func CommentAssessor(account *postbar.Account, comment *postfinder.FloorPageComm
 
 }
 
-var tempForumID uint64
-
-func CommonAssess(from string, account *postbar.Account, post postbar.IPost, tid uint64) postfinder.Control {
-
-	_, uid := post.PGetAuthor().AGetID()
-	pid := post.PGetPid()
-
-	if 水楼Tids[tid] {
-		logs.Debug(MakePrefix(nil, tid, pid, 0, uid), "水楼的贴子应该来不到这里,但是不知道为什么来了.")
-		return postfinder.Finish //防止水楼回复被删
-	}
-
-	//contentList := post.PGetContentList()
-	text := ExtractText(post.PGetContentList())
-
-	if matchedExp := 匹配正则组(*内容关键词, text); matchedExp != "" {
-		return DeletePost(from, account, tid, pid, 0, uid, fmt.Sprint("内容匹配关键词:", matchedExp))
-	} else if math.Mod(float64(len(text)), 15.0) == 0 {
-		if match, _ := regexp.MatchString("[1十拾⑩①][5五伍⑤]字", text); match {
-			return DeletePost(from, account, tid, pid, 0, uid, fmt.Sprint("标准十五字", matchedExp))
-		}
-
-	}
-
-	author := post.PGetAuthor()
-
-	if from != "高级搜索" {
-		fmt.Println(from, author.AGetName(), ":", text)
-		if exist, level := author.AGetLevel(); exist {
-
-			if level == 1 && len(author.AGetName()) == 3 {
-				if tempForumID == 0 {
-					tempForumID, _, _ = apis.GetFid("minecraft")
-				}
-				for {
-					err, pberr := apis.BlockIDWeb(account.BDUSS, tempForumID, author.AGetName(), post.PGetPid(), 1, "爆吧保护")
-					if err == nil {
-						fmt.Println(pberr, author.AGetName(), text)
-						return postfinder.Finish
-						break
-					}
-
-				}
-
-			}
-		}
-
-	}
-
-	return postfinder.Continue
-}
-
 func useless() {
 	fmt.Println(io.EOF,
 		http.DefaultMaxHeaderBytes,
 	)
-
-}
-
-func TidAssess(account *postbar.Account, post postbar.IPost, tid uint64) {
 
 }
 
@@ -308,71 +291,6 @@ func MakePrefix(serverTime *time.Time, tid, pid, spid, uid uint64) string {
 func GetServerTimeFromExtra(extra postbar.IExtra) *time.Time {
 	return postfinder.GetServerTimeFromExtra(extra)
 
-}
-
-func KeepUpdatingKeyWords(fileName string) *[]*regexp.Regexp {
-	var kwExpPtr *[]*regexp.Regexp
-	var lastChangeTime time.Time
-
-	var WaitForInit chan bool = make(chan bool)
-
-	go func() {
-		var f *os.File
-		var foerr, _err error
-		_kwExp := make([]*regexp.Regexp, 0)
-		aticker := time.NewTicker(time.Second)
-		for {
-			if f, foerr = os.Open(fileName); foerr != nil {
-				logs.Error("更新关键词列表失败,打开文件失败.", foerr.Error())
-			} else if finfo, err := f.Stat(); err != nil {
-				_err = err
-				logs.Error("更新关键词列表失败,获取文件信息失败.", err.Error())
-			} else if finfo.ModTime() != lastChangeTime {
-				lastChangeTime = finfo.ModTime()
-
-				if keywordsBytes, err := ioutil.ReadAll(f); err != nil {
-					_err = err
-					logs.Error("更新关键词列表失败,读取文件失败.", err.Error())
-				} else {
-					logs.Info("外部关键词文件变更,更新外部关键词.")
-					keywords := strings.Split(string(keywordsBytes), "\n")
-					for _, v := range keywords {
-						exp, err := regexp.Compile(v)
-						_err = err
-						if err != nil {
-							logs.Error("更新关键词`"+v+"`失败.", err.Error())
-						} else if exp.MatchString("") || exp.MatchString(" ") {
-							logs.Error("更新关键词`"+v+"`失败.", "地图炮关键词禁止.")
-						} else {
-							_kwExp = append(_kwExp, exp)
-							logs.Info("外部关键词:", v)
-						}
-					}
-
-				}
-			}
-			if foerr == nil {
-				f.Close()
-			}
-			if _err == nil && foerr == nil {
-				if kwExpPtr == nil {
-					kwExpPtr = &_kwExp
-					WaitForInit <- true
-				} else {
-					*kwExpPtr = _kwExp
-				}
-			} else {
-				logs.Error("更新关键词列表失败.重试.")
-				<-aticker.C
-				continue
-			}
-			<-aticker.C
-		}
-
-	}()
-	<-WaitForInit
-	close(WaitForInit)
-	return kwExpPtr
 }
 
 func keepUpdatingSettings() {
@@ -421,7 +339,6 @@ func keepUpdatingSettings() {
 
 	<-firstTimeWaitChan
 	close(firstTimeWaitChan)
-
 }
 
 func ExtractText(contentList []postbar.Content) string {
@@ -459,7 +376,7 @@ func 匹配正则组(exps []*regexp.Regexp, text string) string {
 func DeletePost(from string, account *postbar.Account, tid, pid, spid, uid uint64, reason string) postfinder.Control {
 
 	if account.BDUSS == "" {
-		logs.Fatal("BDUSS为空,忽略")
+		logs.Warn("BDUSS为空,忽略删帖请求.")
 		return postfinder.Finish
 	}
 
