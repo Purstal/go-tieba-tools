@@ -9,6 +9,11 @@ import (
 )
 
 type OriginalThreadStruct struct {
+	Forum struct {
+		ID   uint64 `json:"id,string"`
+		Name string
+	}
+
 	Page struct {
 		CurrentPage int `json:"current_page,string"`
 		TotalPage   int `json:"total_page,string"`

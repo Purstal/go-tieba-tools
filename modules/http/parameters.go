@@ -26,8 +26,8 @@ func (parameters Parameters) Encode() string {
 		//buffer.WriteString(url.QueryEscape(parameter.Key))
 		buffer.WriteString(parameter.Key)
 		buffer.WriteRune(sCharEqual)
-		//buffer.WriteString(url.QueryEscape(parameter.Value))
-		buffer.WriteString(parameter.Value)
+		buffer.WriteString(url.QueryEscape(parameter.Value))
+		//buffer.WriteString(parameter.Value)
 		buffer.WriteRune(sCharAnd)
 	}
 

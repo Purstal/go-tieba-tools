@@ -33,3 +33,4 @@ _testmain.go
 _*.bat
 
 _.*
+testA.go
