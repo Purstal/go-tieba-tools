@@ -1,4 +1,4 @@
-package post
+package apis
 
 import (
 	"strconv"
