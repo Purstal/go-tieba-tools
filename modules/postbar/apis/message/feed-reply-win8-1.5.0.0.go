@@ -7,7 +7,33 @@ import (
 
 	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
+	"github.com/purstal/pbtools/modules/postbar/apis"
 )
+
+type ReplyMessage struct {
+	IsFloor bool
+	Type    int //?
+	//Unread bool //不靠谱
+
+	Replyer struct {
+		ID        uint64 //uid
+		Name      string
+		Portarait string
+		IsFriend  bool
+	}
+	QuoteUser struct {
+		ID   uint64
+		Name string
+	}
+	Title        string
+	Content      string
+	QuoteContent string
+	Tid          uint64
+	Pid          uint64
+	Time         time.Time
+	ForumName    string
+	QuotePid     uint64
+}
 
 type OriginalReplyMessageStruct struct {
 	IsFloor string `json:"is_floor"`
@@ -34,7 +60,7 @@ type OriginalReplyMessageStruct struct {
 
 func GetOriginalReplyMessageStruct(acc *postbar.Account) ([]OriginalReplyMessageStruct, error, *pberrors.PbError) {
 
-	resp, err := RFeedReplyMe(acc)
+	resp, err := apis.RFeedReplyMe(acc)
 
 	if err != nil {
 		return nil, err, nil
@@ -61,7 +87,7 @@ func GetOriginalReplyMessageStruct(acc *postbar.Account) ([]OriginalReplyMessage
 
 }
 
-func GettReplyMessageStruct(acc *postbar.Account) ([]ReplyMessage, error, *pberrors.PbError) {
+func GettReplyMessage(acc *postbar.Account) ([]ReplyMessage, error, *pberrors.PbError) {
 
 	_msgs, err, pberr := GetOriginalReplyMessageStruct(acc)
 
@@ -102,5 +128,4 @@ func GettReplyMessageStruct(acc *postbar.Account) ([]ReplyMessage, error, *pberr
 	}
 
 	return msgs, nil, nil
-
 }

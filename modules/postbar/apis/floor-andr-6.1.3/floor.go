@@ -1,34 +1,12 @@
 package floor
 
 import (
-	"strconv"
 	"time"
 
-	"github.com/purstal/pbtools/modules/http"
 	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/thread-win8-1.5.0.0"
 )
-
-func RGetFloor(acc *postbar.Account, tid uint64,
-	isComment bool, id uint64, pn int) ([]byte, error) {
-	var parameters http.Parameters
-	parameters.Add("from", "tieba")
-	parameters.Add("kz", strconv.FormatUint(tid, 10))
-	if isComment {
-		parameters.Add("spid", strconv.FormatUint(id, 10))
-	} else {
-		parameters.Add("pid", strconv.FormatUint(id, 10))
-	}
-	if pn != 0 {
-		parameters.Add("pn", strconv.Itoa(pn))
-	}
-
-	postbar.ProcessParams(&parameters, acc)
-
-	resp, err := http.Post(`http://c.tieba.baidu.com/c/f/pb/floor`, parameters)
-	return resp, err
-}
 
 func GetFloorStruct(acc *postbar.Account, tid uint64,
 	isComment bool, id uint64, pn int) (*thread.ThreadPage,

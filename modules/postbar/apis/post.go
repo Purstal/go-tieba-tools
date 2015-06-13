@@ -7,7 +7,6 @@ import (
 	"github.com/purstal/pbtools/modules/http"
 	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/apis"
 )
 
 func _AddPost(acc *postbar.Account, content string, fid uint64, forumName string, tid uint64) {
@@ -29,7 +28,7 @@ func AddPost(accAndr *postbar.Account, content string, fid uint64, forumName str
 		parameters.Add("quote_id", strconv.FormatUint(quoteID, 10))
 	}
 	for {
-		tbs, err := apis.GetTbsWeb(accAndr.BDUSS)
+		tbs, err := GetTbsWeb(accAndr.BDUSS)
 		if err == nil {
 			parameters.Add("tbs", tbs)
 			break

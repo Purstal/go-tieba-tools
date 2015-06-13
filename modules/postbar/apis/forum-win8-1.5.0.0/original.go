@@ -6,6 +6,7 @@ import (
 
 	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
+	"github.com/purstal/pbtools/modules/postbar/apis"
 )
 
 type OriginalForumStruct struct {
@@ -62,7 +63,7 @@ func GetOriginalForumStruct(
 	pn int) (*OriginalForumStruct,
 	error, *pberrors.PbError) {
 
-	resp, err := RGetForum(acc, kw, rn, pn)
+	resp, err := apis.RGetForum(acc, kw, rn, pn)
 
 	//f, _ := os.Create("debug.json")
 	//f.Write(resp)

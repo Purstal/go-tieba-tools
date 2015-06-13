@@ -1,4 +1,4 @@
-package message
+package apis
 
 import (
 	"encoding/json"
@@ -7,6 +7,18 @@ import (
 	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 )
+
+func RFeedReplyMe(acc *postbar.Account) ([]byte, error) {
+	var parameters http.Parameters
+	postbar.ProcessParams(&parameters, acc)
+	return http.Post("http://c.tieba.baidu.com"+"/c/u/feed/replyme", parameters)
+}
+
+func RFeedAtMe(acc *postbar.Account) ([]byte, error) {
+	var parameters http.Parameters
+	postbar.ProcessParams(&parameters, acc)
+	return http.Post("http://c.tieba.baidu.com"+"/c/u/feed/atme", parameters)
+}
 
 /*
 {

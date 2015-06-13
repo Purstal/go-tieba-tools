@@ -2,10 +2,8 @@ package forum
 
 import (
 	//"encoding/json"
-	"strconv"
 	"time"
 
-	"github.com/purstal/pbtools/modules/http"
 	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 )
@@ -66,19 +64,4 @@ func GetForumStruct(
 	}
 
 	return &fp, ThreadList, &fpe, nil, nil
-}
-
-func RGetForum(acc *postbar.Account, kw string, rn,
-	pn int) ([]byte, error) {
-	var parameters http.Parameters
-
-	parameters.Add("kw", kw)
-	parameters.Add("rn", strconv.Itoa(rn))
-	parameters.Add("pn", strconv.Itoa(pn))
-	//is_good
-
-	postbar.ProcessParams(&parameters, acc)
-
-	return http.Post(`http://c.tieba.baidu.com/c/f/frs/page`, parameters)
-
 }

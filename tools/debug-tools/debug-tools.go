@@ -9,6 +9,7 @@ import (
 
 	pbhttp "github.com/purstal/pbtools/modules/http"
 	"github.com/purstal/pbtools/modules/postbar"
+	"github.com/purstal/pbtools/modules/postbar/apis"
 )
 
 type MyMux struct{}
@@ -59,11 +60,16 @@ func (mux *MyMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	var fmt_json bool
+	var fmt_json, debug_output bool
 
-	if _, exist := form[("fmt_json")]; exist {
-		delete(form, "fmt_json")
+	if _, exist := form["fmt-json"]; exist {
+		delete(form, "fmt-json")
 		fmt_json = true
+	}
+
+	if _, exist := form["console-debug-output"]; exist {
+		delete(form, "console-debug-output")
+		debug_output = true
 	}
 
 	var account *postbar.Account
@@ -75,23 +81,23 @@ func (mux *MyMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		account = postbar.NewDefaultAndroidAccount("")
 	}
 
-	if net_type, exist := form[("net_type")]; exist {
+	if net_type, exist := form["net_type"]; exist {
 		delete(form, "net_type")
 		account.NetType = net_type
 	}
-	if _client_type, exist := form[("_client_type")]; exist {
+	if _client_type, exist := form["_client_type"]; exist {
 		delete(form, "_client_type")
 		account.ClientType = _client_type
 	}
-	if _client_id, exist := form[("_client_id")]; exist {
+	if _client_id, exist := form["_client_id"]; exist {
 		delete(form, "_client_id")
 		account.ClientID = _client_id
 	}
-	if _client_version, exist := form[("_client_version")]; exist {
+	if _client_version, exist := form["_client_version"]; exist {
 		delete(form, "_client_version")
 		account.ClientVersion = _client_version
 	}
-	if _phone_imei, exist := form[("_phone_imei")]; exist {
+	if _phone_imei, exist := form["_phone_imei"]; exist {
 		delete(form, "_phone_imei")
 		account.PhoneIMEI = _phone_imei
 	}
@@ -104,11 +110,34 @@ func (mux *MyMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var parameters pbhttp.Parameters
+
+	if _, exist := form["require-tbs"]; exist {
+		delete(form, "require-tbs")
+		for {
+			tbs, err := apis.GetTbsWeb(account.BDUSS)
+			if err == nil {
+				parameters.Add("tbs", tbs)
+				break
+			}
+		}
+	}
+
+	if _, exist := form["require-cuid"]; exist {
+		delete(form, "require-cuid")
+		cuid := postbar.GenCUID("", account.PhoneIMEI)
+		parameters.Add("cuid", cuid)
+	}
+
 	for key, value := range form {
 		parameters.Add(key, value)
 	}
 
 	postbar.ProcessParams(&parameters, account)
+
+	if debug_output {
+		fmt.Println(r.URL.Path, parameters.Encode(), "\n")
+
+	}
 
 	resp, err := pbhttp.Post("http://c.tieba.baidu.com"+r.URL.Path, parameters)
 	var ERROR struct {
