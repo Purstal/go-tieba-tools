@@ -6,7 +6,7 @@ import (
 
 	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/thread-win8-1.5.0.0"
+	"github.com/purstal/pbtools/modules/postbar/apis/thread-win8-1.5.0.0"
 	"time"
 )
 

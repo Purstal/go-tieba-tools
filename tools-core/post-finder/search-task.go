@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/purstal/pbtools/modules/postbar/forum-win8-1.5.0.0"
+	"github.com/purstal/pbtools/modules/postbar/apis/forum-win8-1.5.0.0"
 )
 
 type Demand *forum.ForumPageThread

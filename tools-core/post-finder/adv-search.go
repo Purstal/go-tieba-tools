@@ -8,9 +8,9 @@ import (
 
 	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/advsearch"
-	floor "github.com/purstal/pbtools/modules/postbar/floor-andr-6.1.3"
+	floor "github.com/purstal/pbtools/modules/postbar/apis/floor-andr-6.1.3"
 	//forum "github.com/purstal/pbtools/modules/advsearch/forum-win8-1.5.0.0"
-	thread "github.com/purstal/pbtools/modules/postbar/thread-win8-1.5.0.0"
+	thread "github.com/purstal/pbtools/modules/postbar/apis/thread-win8-1.5.0.0"
 	//"github.com/purstal/pbtools/modules/logs"
 	"github.com/purstal/pbtools/modules/pberrors"
 )

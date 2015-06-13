@@ -8,7 +8,7 @@ import (
 
 	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/apis"
-	"github.com/purstal/pbtools/modules/postbar/forum-win8-1.5.0.0"
+	"github.com/purstal/pbtools/modules/postbar/apis/forum-win8-1.5.0.0"
 )
 
 type FreshPostMonitor struct {

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/thread-win8-1.5.0.0"
+	"github.com/purstal/pbtools/modules/postbar/apis/thread-win8-1.5.0.0"
 )
 
 type FloorPageComment struct {
