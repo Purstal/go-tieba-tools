@@ -79,6 +79,10 @@ func (mux *MyMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		account = postbar.NewDefaultWindows8Account("")
 	case "Andr":
 		account = postbar.NewDefaultAndroidAccount("")
+	case "nil":
+		account = &postbar.Account{}
+	default:
+		account = &postbar.Account{}
 	}
 
 	if net_type, exist := form["net_type"]; exist {

@@ -74,12 +74,14 @@ func BlockIDWeb(BDUSS string,
 	parameters.Add("tbs", tbs)
 
 	parameters.Add("ie", "gbk")
-	parameters.Add("user_name%5B%5D", userName)
-	parameters.Add("pid%5B%5D", strconv.FormatUint(pid, 10))
+	parameters.Add("user_name[]", userName)
+	parameters.Add("pid[]", strconv.FormatUint(pid, 10))
 	parameters.Add("reason", reason)
 
 	var cookies http.Cookies
 	cookies.Add("BDUSS", BDUSS)
+
+	//println(parameters.Encode())
 
 	resp, err := http.Get("http://tieba.baidu.com/pmc/blockid", parameters, cookies)
 
@@ -96,38 +98,28 @@ func BlockIDWeb(BDUSS string,
 	return nil, pberrors.NewPbError(x.ErrorCode, x.ErrorMsg)
 }
 
-/*
-//有问题
 func CommitPrison(account *postbar.Account,
-	forumName string, forumID uint64, userName string, threadID uint64,
+	forumName string, forumID uint64, userName string, threadID, postID uint64,
 	day int, reason string) (error, *pberrors.PbError) {
 	var parameters http.Parameters
 	parameters.Add("day", strconv.Itoa(day))
 	parameters.Add("fid", strconv.FormatUint(forumID, 10))
 	parameters.Add("ntn", "banid") //"banip"会出错
+	parameters.Add("post_id", strconv.FormatUint(postID, 10))
 	parameters.Add("reason", reason)
-
-	tbs, err, pberr := account.GetTbs()
+	tbs, err := GetTbsWeb(account.BDUSS)
 	if err != nil {
 		return err, nil
-	} else if pberr != nil {
-		return nil, pberr
 	}
 	parameters.Add("tbs", tbs)
-
 	parameters.Add("un", userName)
 	parameters.Add("word", forumName)
-
-	parameters.Add("z", strconv.FormatUint(threadID, 10)) //这项必须有,但是随便打个非0数就成了
-	//有问题,不知道出在哪里
-
-	ProcessParams(&parameters, account)
+	parameters.Add("z", strconv.FormatUint(threadID, 10))
+	postbar.ProcessParams(&parameters, account)
 
 	resp, err := http.Post("http://c.tieba.baidu.com/c/c/bawu/commitprison", parameters)
-
 	if err != nil {
 		return err, nil
 	}
 	return pberrors.ExtractError(resp)
 }
-*/

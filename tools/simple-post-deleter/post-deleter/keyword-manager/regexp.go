@@ -19,24 +19,29 @@ const (
 	ChangeFile
 )
 
-type KeywordManager struct {
+type RegexpKeyword struct {
+	BanFlag bool
+	Rx      *regexp.Regexp
+}
+
+type RegexpKeywordManager struct {
 	Logger *logs.Logger
 
 	FileName      string
-	KewWordExps   []*regexp.Regexp
+	KewWordExps   []RegexpKeyword
 	LastModTime   time.Time
 	CheckInterval time.Duration
 
 	actChan chan action.Action
 }
 
-func NewKeywordManager(logger *logs.Logger) *KeywordManager {
-	return &KeywordManager{Logger: logger, actChan: make(chan action.Action)}
+func NewRegexpKeywordManager(logger *logs.Logger) *RegexpKeywordManager {
+	return &RegexpKeywordManager{Logger: logger, actChan: make(chan action.Action)}
 }
 
-func NewKeywordManagerBidingWithFile(keyWordFileFlieName string,
-	checkInterval time.Duration, logger *logs.Logger) (*KeywordManager, error) {
-	var m KeywordManager
+func NewRegexpKeywordManagerBidingWithFile(keyWordFileFlieName string,
+	checkInterval time.Duration, logger *logs.Logger) (*RegexpKeywordManager, error) {
+	var m RegexpKeywordManager
 	m.FileName = keyWordFileFlieName
 
 	file, err := os.Open(m.FileName)
@@ -105,19 +110,19 @@ func NewKeywordManagerBidingWithFile(keyWordFileFlieName string,
 	return &m, nil
 }
 
-func (m KeywordManager) ChangeCheckInterval(newInterval time.Duration) {
+func (m RegexpKeywordManager) ChangeCheckInterval(newInterval time.Duration) {
 	m.actChan <- action.Action{ChangeInterval, newInterval}
 }
 
-func (m KeywordManager) ChangeKeyWordFile(newFile string) {
+func (m RegexpKeywordManager) ChangeKeyWordFile(newFile string) {
 	m.actChan <- action.Action{ChangeFile, newFile}
 }
 
-func (m KeywordManager) KeyWords() []*regexp.Regexp {
+func (m RegexpKeywordManager) KeyWords() []RegexpKeyword {
 	return m.KewWordExps
 }
 
-func LoadExps(file *os.File, exps *[]*regexp.Regexp, logger *logs.Logger) error {
+func LoadExps(file *os.File, exps *[]RegexpKeyword, logger *logs.Logger) error {
 	bytes, err := ioutil.ReadAll(file)
 	if err != nil {
 		return err
@@ -125,13 +130,17 @@ func LoadExps(file *os.File, exps *[]*regexp.Regexp, logger *logs.Logger) error 
 
 	lines := strings.Split(string(bytes), "\n")
 
-	oldExps := make(map[string]*regexp.Regexp)
+	oldExps := make(map[string]RegexpKeyword)
 
 	for _, exp := range *exps {
-		oldExps[exp.String()] = exp
+		if exp.BanFlag {
+			oldExps["$ban "+exp.Rx.String()] = exp
+		} else {
+			oldExps[exp.Rx.String()] = exp
+		}
 	}
 
-	newExps := make(map[string]*regexp.Regexp)
+	newExps := make(map[string]RegexpKeyword)
 	var addedExps []string
 
 	for lineNo, line := range lines {
@@ -145,18 +154,25 @@ func LoadExps(file *os.File, exps *[]*regexp.Regexp, logger *logs.Logger) error 
 			newExps[line] = exp
 			delete(oldExps, line)
 		} else {
-			newExp, err := regexp.Compile(line)
+			var banFlag bool
+			var newExp *regexp.Regexp
+			var err error
+			if banFlag = strings.HasPrefix(line, "$ban "); banFlag {
+				newExp, err = regexp.Compile(strings.TrimLeft(line, "$ban "))
+			} else {
+				newExp, err = regexp.Compile(line)
+			}
 			if err != nil {
 				logs.Error(fmt.Sprintf("不正确的关键词(第%d行),跳过.", lineNo), err)
 			} else {
-				newExps[line] = newExp
+				newExps[line] = RegexpKeyword{banFlag, newExp}
 				addedExps = append(addedExps, line)
 			}
 
 		}
 	}
 
-	newExpSlice := make([]*regexp.Regexp, 0, len(newExps))
+	newExpSlice := make([]RegexpKeyword, 0, len(newExps))
 
 	for _, exp := range newExps {
 		newExpSlice = append(newExpSlice, exp)
@@ -169,7 +185,11 @@ func LoadExps(file *os.File, exps *[]*regexp.Regexp, logger *logs.Logger) error 
 		updateInfo = updateInfo + "[+] " + exp + "\n"
 	}
 	for _, exp := range oldExps {
-		updateInfo = updateInfo + "[-] " + exp.String() + "\n"
+		if exp.BanFlag {
+			updateInfo = updateInfo + "[-] $ban" + exp.Rx.String() + "\n"
+		} else {
+			updateInfo = updateInfo + "[-] " + exp.Rx.String() + "\n"
+		}
 	}
 	updateInfo = strings.TrimSuffix(updateInfo, "\n")
 	logger.Info(updateInfo)

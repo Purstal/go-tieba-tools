@@ -10,7 +10,7 @@ import (
 
 func GetFid(fname string) (uint64, error, *pberrors.PbError) {
 	var parameters http.Parameters
-	parameters.Add("fname", misc.UrlQueryEscape(misc.ToGBK(fname)))
+	parameters.Add("fname", misc.ToGBK(fname))
 	resp, err := http.Post(`http://tieba.baidu.com/f/commit/share/fnameShareApi`, parameters)
 
 	if err != nil {

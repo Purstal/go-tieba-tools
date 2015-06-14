@@ -24,7 +24,7 @@ func (parameters Parameters) Encode() string {
 	var buffer bytes.Buffer
 	for _, parameter := range parameters {
 		//buffer.WriteString(url.QueryEscape(parameter.Key))
-		buffer.WriteString(parameter.Key)
+		buffer.WriteString(url.QueryEscape(parameter.Key))
 		buffer.WriteRune(sCharEqual)
 		buffer.WriteString(url.QueryEscape(parameter.Value))
 		//buffer.WriteString(parameter.Value)
