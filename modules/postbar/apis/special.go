@@ -8,9 +8,9 @@ import (
 	"github.com/purstal/pbtools/modules/postbar"
 )
 
-func GetFid(fname string) (uint64, error, *postbar.PbError) {
+func GetFid(forumName string) (uint64, error, *postbar.PbError) {
 	var parameters http.Parameters
-	parameters.Add("fname", misc.ToGBK(fname))
+	parameters.Add("fname", misc.ToGBK(forumName))
 	resp, err := http.Post(`http://tieba.baidu.com/f/commit/share/fnameShareApi`, parameters)
 
 	if err != nil {
@@ -35,9 +35,9 @@ func GetFid(fname string) (uint64, error, *postbar.PbError) {
 
 }
 
-func GetUid(un string) (uint64, error) { //忠于百度的写法,用Get取
+func GetUid(userName string) (uint64, error) { //忠于百度的写法,用Get取
 	var parameters http.Parameters
-	parameters.Add("un", misc.UrlQueryEscape(misc.ToGBK(un)))
+	parameters.Add("un", misc.UrlQueryEscape(misc.ToGBK(userName)))
 	resp, err := http.Get("http://tieba.baidu.com/i/sys/user_json", parameters, nil)
 	//println(string(resp))
 	if err != nil {
@@ -60,9 +60,9 @@ func GetUid(un string) (uint64, error) { //忠于百度的写法,用Get取
 
 }
 
-func HasWrongUserJson(un string) (bool, error) {
+func HasWrongUserJson(userName string) (bool, error) {
 	var parameters http.Parameters
-	parameters.Add("un", misc.UrlQueryEscape(misc.ToGBK(un)))
+	parameters.Add("un", misc.UrlQueryEscape(misc.ToGBK(userName)))
 	resp, err := http.Get("http://tieba.baidu.com/i/sys/user_json", parameters, nil)
 	if err != nil {
 		return false, err
@@ -81,11 +81,42 @@ func HasWrongUserJson(un string) (bool, error) {
 	return x.RawName == "", nil
 }
 
-func GetTbsWeb(BDUSS string) (string, error) {
+func RGetTbs(acc *postbar.Account) ([]byte, error) {
+	var parameters http.Parameters
+	postbar.ProcessParams(&parameters, acc)
+	return http.Post(`http://c.tieba.baidu.com/c/s/tbs`, parameters)
+}
+
+func GetTbs(acc *postbar.Account) (string, error, *postbar.PbError) {
+	resp, err := RGetTbs(acc)
+	if err != nil {
+		return "", err, nil
+	}
+	var x struct {
+		ErrorCode int    `json:"error_code,string"`
+		ErrorMsg  string `json:"error_msg"`
+		Tbs       string `json:"tbs"`
+	}
+	err2 := json.Unmarshal(resp, &x)
+	if err2 != nil {
+		return "", err, nil
+	}
+	if x.ErrorCode != 0 {
+		return "", nil, postbar.NewPbError(x.ErrorCode, x.ErrorMsg)
+	}
+	return x.Tbs, nil, nil
+}
+
+func RGetTbsWeb(BDUSS string) ([]byte, error) {
 	var cookies http.Cookies
 	cookies.Add("BDUSS", BDUSS)
+	return http.Get(`http://tieba.baidu.com/dc/common/tbs`, nil, cookies)
 
-	data, err := http.Get(`http://tieba.baidu.com/dc/common/tbs`, nil, cookies)
+}
+
+func GetTbsWeb(BDUSS string) (string, error) {
+
+	data, err := GetTbsWeb(BDUSS)
 
 	if err != nil {
 		return "", err

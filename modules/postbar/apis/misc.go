@@ -7,9 +7,9 @@ import (
 	"github.com/purstal/pbtools/modules/postbar"
 )
 
-func RSearchForum(query string) ([]byte, error) {
+func RSearchForum(forumName string) ([]byte, error) {
 	var parameters http.Parameters
-	parameters.Add("query", query)
+	parameters.Add("query", forumName)
 	postbar.AddSignature(&parameters)
 	return http.Post(`http://c.tieba.baidu.com/c/f/forum/search`, parameters)
 }
@@ -19,8 +19,8 @@ type ForumSearchResult struct {
 	ForumName string `json:"forum_name"`
 }
 
-func SearchForum(query string) ([]ForumSearchResult, error, *postbar.PbError) {
-	resp, err := RSearchForum(query)
+func SearchForum(forumName string) ([]ForumSearchResult, error, *postbar.PbError) {
+	resp, err := RSearchForum(forumName)
 	if err != nil {
 		return nil, err, nil
 	}
