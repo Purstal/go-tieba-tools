@@ -2,46 +2,46 @@
 
 ##目录
 
-* [account.go](#)
+* [account.go](#account.go)
 	* [RLogin](#RLogin)(acc, userName, password)
-		* Login(acc, password)
+		* [Login](#Login)(acc, password)
 	* [IsLogin](#IsLogin)(BDUSS)
-* bawu.go
+* [bawu.go](#bawu.go)
 	* [DeletePost](#DeletePost)(acc, pid)
 	* [DeleteThread](#DeleteThread)(acc, tid)
 	* [BlockIDWeb](#BlockIDWeb)(BDUSS, forumID, userName, pid, day, reason)
 	* [CommitPrison](#CommitPrison)(acc, forumName, forumID, userName, threadID, postID, day ,reason)
-* message.go
-	* RFeedReplyMe(acc)
+* [message.go](#message.go)
+	* [RFeedReplyMe](#RFeedReplyMe)(acc)
 		* https://github.com/Purstal/pbtools/tree/master/modules/postbar/apis/message/
-	* RFeedAtMe(acc)
-	* GetNotice(acc)
-* misc.go
-	* RSearchForum(forumName)
-		* SearchForum(forumName)
-* page.go
-	* RGetForum(acc, kw, rn, pn)
+	* [RFeedAtMe](#RFeedAtMe)(acc)
+	* [GetNotice](#GetNotice)(acc)
+* [misc.go](#misc.go)
+	* [RSearchForum](#RSearchForum)(forumName)
+		* [SearchForum](#SearchForum)(forumName)
+* [page.go](#page.go)
+	* [RGetForum](#RGetForum)(acc, kw, rn, pn)
 		* https://github.com/Purstal/pbtools/tree/master/modules/postbar/apis/forum-win8-1.5.0.0/
-	* RGetThread(acc, tid, mark, pid, pn, rn, withFloor, seeLz, r)
+	* [RGetThread](#RGetThread)(acc, tid, mark, pid, pn, rn, withFloor, seeLz, r)
 		* https://github.com/Purstal/pbtools/tree/master/modules/postbar/apis/thread-win8-1.5.0.0/
-	* RGetFloor(acc, tid, isComment, id, pn)
+	* [RGetFloor](#RGetFloor)(acc, tid, isComment, id, pn)
 		* https://github.com/Purstal/pbtools/tree/master/modules/postbar/apis/floor-andr-6.1.3/
-* post.go
-	* AddPost(accAndr, content, fid, forumName, tid, floorNumber, quoteID)
-* sign-in.go
-	* GetForumList(accAndr)
-* special.go
-	* GetFid(forumName)
-	* GetUid(userName)
-	* RGetTbs(acc)
-		* GetTbs(acc)
-	* RGetTbsWeb(BDUSS)
-		* GetTbsWeb(BDUSS)
-* unknown.go
-	* RTest(acc, userName, password)
-* users.go
-	* GetUserForumLike(acc, uid)
-	* GetUserInfo(acc, uid)
+* [post.go](#post.go)
+	* [AddPost](#AddPost)(accAndr, content, fid, forumName, tid, floorNumber, quoteID)
+* [sign-in.go](#sign-in.go)
+	* [GetForumList](#GetForumList)(accAndr)
+* [special.go](#special.go)
+	* [GetFid](#GetFid)(forumName)
+	* [GetUid](#GetUid)(userName)
+	* [RGetTbs](#RGetTbs)(acc)
+		* [GetTbs](#GetTbs)(acc)
+	* [RGetTbsWeb](#RGetTbsWeb)(BDUSS)
+		* [GetTbsWeb](#GetTbsWeb)(BDUSS)
+* [unknown.go](#unknown.go)
+	* [RTest](#RTest)(acc, userName, password)
+* [users.go](#users.go)
+	* [GetUserForumLike](#GetUserForumLike)(acc, uid)
+	* [GetUserInfo](#GetUserInfo)(acc, uid)
 
 ---
 * 以R为前缀的函数返回 `([]byte, error)`
