@@ -4,13 +4,12 @@ import (
 	"encoding/json"
 
 	"github.com/purstal/pbtools/modules/http"
-	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 )
 
 func CancelBlockIDWeb(acc *postbar.Account,
 	forumName, userID,
-	userName string) (error, *pberrors.PbError) {
+	userName string) (error, *postbar.PbError) {
 
 	var parameters http.Parameters
 	parameters.Add("word", forumName)
@@ -43,6 +42,6 @@ func CancelBlockIDWeb(acc *postbar.Account,
 
 	json.Unmarshal(resp, &x)
 
-	return nil, pberrors.NewPbError(x.ErrorCode, x.ErrorMsg)
+	return nil, postbar.NewPbError(x.ErrorCode, x.ErrorMsg)
 
 }

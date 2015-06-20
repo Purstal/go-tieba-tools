@@ -8,7 +8,7 @@ import (
 	"github.com/purstal/pbtools/modules/postbar"
 	tp "github.com/purstal/pbtools/modules/postbar/apis/thread-win8-1.5.0.0"
 
-	postfinder "github.com/purstal/pbtools/tools-core/post-finder"
+	postfinder "github.com/purstal/pbtools/tool-core/post-finder"
 )
 
 func (d *PostDeleter) NewThreadFirstAssessor(account *postbar.Account, thread *postfinder.ForumPageThread) postfinder.Control {

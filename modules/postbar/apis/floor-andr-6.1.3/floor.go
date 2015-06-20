@@ -3,7 +3,6 @@ package floor
 import (
 	"time"
 
-	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/apis/thread-win8-1.5.0.0"
 )
@@ -11,7 +10,7 @@ import (
 func GetFloorStruct(acc *postbar.Account, tid uint64,
 	isComment bool, id uint64, pn int) (*thread.ThreadPage,
 	*thread.ThreadPagePost, []FloorPageComment,
-	*FloorPageExtra, error, *pberrors.PbError) {
+	*FloorPageExtra, error, *postbar.PbError) {
 
 	ofp, err, pberr := GetOriginalFloorStruct(acc, tid, isComment, id, pn)
 

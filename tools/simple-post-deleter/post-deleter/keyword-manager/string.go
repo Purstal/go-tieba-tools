@@ -10,7 +10,7 @@ import (
 
 	"github.com/purstal/pbtools/modules/logs"
 
-	"github.com/purstal/pbtools/tools-core/utils/action"
+	"github.com/purstal/pbtools/tool-core/utils/action"
 )
 
 type StringKeywordManager struct {

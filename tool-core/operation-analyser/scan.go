@@ -9,7 +9,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 
-	"github.com/purstal/pbtools/tools-core/utils"
+	"github.com/purstal/pbtools/tool-core/utils"
 )
 
 type DayData struct {

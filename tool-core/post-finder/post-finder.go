@@ -8,7 +8,7 @@ import (
 	"github.com/purstal/pbtools/modules/postbar/advsearch"
 	"github.com/purstal/pbtools/modules/postbar/apis"
 	"github.com/purstal/pbtools/modules/postbar/apis/forum-win8-1.5.0.0"
-	monitor "github.com/purstal/pbtools/tools-core/forum-page-monitor"
+	monitor "github.com/purstal/pbtools/tool-core/forum-page-monitor"
 )
 
 type Control int

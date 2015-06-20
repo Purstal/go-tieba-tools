@@ -4,13 +4,12 @@ import (
 	"math"
 	"time"
 
-	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 )
 
 func GetThreadStruct(acc *postbar.Account, tid uint64, mark bool, pid uint64, pn, rn int,
 	withFloor, seeLz, r bool) (*ThreadPage, []ThreadPagePost,
-	*ThreadPageExtra, error, *pberrors.PbError) {
+	*ThreadPageExtra, error, *postbar.PbError) {
 
 	otp, err, pberr := GetOriginalThreadStruct(acc, tid, mark, pid, pn, rn, withFloor, seeLz, r)
 

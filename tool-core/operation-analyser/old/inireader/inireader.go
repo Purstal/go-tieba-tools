@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-import "github.com/purstal/pbtools/tools-core/operation-analyser/old/log"
+import "github.com/purstal/pbtools/tool-core/operation-analyser/old/log"
 
 func ReadINI(name string) (INI, error) {
 	var f *os.File

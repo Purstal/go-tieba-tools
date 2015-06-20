@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 
 	"github.com/purstal/pbtools/modules/http"
-	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 )
 
@@ -20,7 +19,7 @@ type ForumSearchResult struct {
 	ForumName string `json:"forum_name"`
 }
 
-func SearchForum(query string) ([]ForumSearchResult, error, *pberrors.PbError) {
+func SearchForum(query string) ([]ForumSearchResult, error, *postbar.PbError) {
 	resp, err := RSearchForum(query)
 	if err != nil {
 		return nil, err, nil
@@ -37,7 +36,7 @@ func SearchForum(query string) ([]ForumSearchResult, error, *pberrors.PbError) {
 	if forumSearchResults.ErrorCode == 110003 {
 		return nil, nil, nil
 	} else if forumSearchResults.ErrorCode != 0 {
-		return nil, nil, pberrors.NewPbError(forumSearchResults.ErrorCode, forumSearchResults.ErrorMsg)
+		return nil, nil, postbar.NewPbError(forumSearchResults.ErrorCode, forumSearchResults.ErrorMsg)
 	}
 
 	return forumSearchResults.ForumList, nil, nil

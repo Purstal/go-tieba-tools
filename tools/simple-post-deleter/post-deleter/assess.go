@@ -7,7 +7,7 @@ import (
 	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/advsearch"
 
-	postfinder "github.com/purstal/pbtools/tools-core/post-finder"
+	postfinder "github.com/purstal/pbtools/tool-core/post-finder"
 )
 
 func (d *PostDeleter) ThreadFilter(account *postbar.Account, thread *postfinder.ForumPageThread) postfinder.Control {

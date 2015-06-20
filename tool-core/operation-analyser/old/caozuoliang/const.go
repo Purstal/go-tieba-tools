@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-import "github.com/purstal/pbtools/tools-core/operation-analyser/old/net"
+import "github.com/purstal/pbtools/tool-core/operation-analyser/old/net"
 
 const Version = "1.6.2"
 

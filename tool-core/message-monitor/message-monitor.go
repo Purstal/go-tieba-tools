@@ -5,10 +5,9 @@ import (
 	"time"
 
 	"github.com/purstal/pbtools/modules/logs"
-	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 
-	"github.com/purstal/pbtools/tools-core/utils/action"
+	"github.com/purstal/pbtools/tool-core/utils/action"
 
 	//"github.com/purstal/pbtools/modules/postbar/floor-andr-6.1.3"
 	//"github.com/purstal/pbtools/modules/postbar/thread-win8-1.5.0.0"
@@ -81,11 +80,11 @@ func (m *MessageMonitor) Stop() uint64 {
 	return lastFoundPid
 }
 
-func checkReply(acc *postbar.Account, lastFoundPid uint64) ([]message.ReplyMessage, uint64, error, *pberrors.PbError) {
+func checkReply(acc *postbar.Account, lastFoundPid uint64) ([]message.ReplyMessage, uint64, error, *postbar.PbError) {
 
 	var msgs []message.ReplyMessage
 	var err error
-	var pberr *pberrors.PbError
+	var pberr *postbar.PbError
 
 	for i := 0; i < 10; i++ {
 		msgs, err, pberr = message.GettReplyMessageStruct(acc)

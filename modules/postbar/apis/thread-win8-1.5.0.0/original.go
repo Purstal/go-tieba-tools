@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/apis"
 )
@@ -55,7 +54,7 @@ type OriginalThreadStruct struct {
 }
 
 func GetOriginalThreadStruct(acc *postbar.Account, tid uint64, mark bool, pid uint64, pn, rn int,
-	withFloor, seeLz, r bool) (*OriginalThreadStruct, error, *pberrors.PbError) {
+	withFloor, seeLz, r bool) (*OriginalThreadStruct, error, *postbar.PbError) {
 	resp, err := apis.RGetThread(acc, tid, mark, pid, pn, rn, withFloor, seeLz, r)
 
 	if err != nil {
@@ -70,7 +69,7 @@ func GetOriginalThreadStruct(acc *postbar.Account, tid uint64, mark bool, pid ui
 		return nil, err2, nil
 	}
 	if x.ErrorCode != 0 {
-		return &x, nil, pberrors.NewPbError(x.ErrorCode, x.ErrorMsg)
+		return &x, nil, postbar.NewPbError(x.ErrorCode, x.ErrorMsg)
 	}
 	return &x, nil, nil
 

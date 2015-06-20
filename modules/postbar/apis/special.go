@@ -5,10 +5,10 @@ import (
 
 	"github.com/purstal/pbtools/modules/http"
 	"github.com/purstal/pbtools/modules/misc"
-	"github.com/purstal/pbtools/modules/pberrors"
+	"github.com/purstal/pbtools/modules/postbar"
 )
 
-func GetFid(fname string) (uint64, error, *pberrors.PbError) {
+func GetFid(fname string) (uint64, error, *postbar.PbError) {
 	var parameters http.Parameters
 	parameters.Add("fname", misc.ToGBK(fname))
 	resp, err := http.Post(`http://tieba.baidu.com/f/commit/share/fnameShareApi`, parameters)
@@ -26,7 +26,7 @@ func GetFid(fname string) (uint64, error, *pberrors.PbError) {
 	}
 
 	if x.ErrorNo != 0 {
-		return 0, nil, pberrors.NewPbError(x.ErrorNo, x.ErrorMsg)
+		return 0, nil, postbar.NewPbError(x.ErrorNo, x.ErrorMsg)
 	}
 
 	json.Unmarshal(resp, &x)

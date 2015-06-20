@@ -3,7 +3,6 @@ package thread
 import (
 	"time"
 
-	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 )
 
@@ -29,7 +28,7 @@ type Thread struct {
 }
 
 func GetThread2(acc *postbar.Account, tid uint64, mark bool, pid uint64, pn, rn int,
-	withFloor, seeLz, r bool) (*Thread, error, *pberrors.PbError) {
+	withFloor, seeLz, r bool) (*Thread, error, *postbar.PbError) {
 
 	_thread, err, pberr := GetOriginalThreadStruct(acc, tid, mark, pid, pn, rn, withFloor, seeLz, r)
 

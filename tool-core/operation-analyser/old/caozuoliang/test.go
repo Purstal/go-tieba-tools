@@ -1,6 +1,6 @@
 package caozuoliang
 
-import "github.com/purstal/pbtools/tools-core/operation-analyser/old/log"
+import "github.com/purstal/pbtools/tool-core/operation-analyser/old/log"
 import "github.com/purstal/pbtools/tools/operation-analyser/csv"
 
 //import "djimenez/iconv-go/bbbb"

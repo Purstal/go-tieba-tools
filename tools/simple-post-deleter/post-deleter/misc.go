@@ -6,7 +6,7 @@ import (
 
 	"github.com/purstal/pbtools/modules/postbar"
 
-	postfinder "github.com/purstal/pbtools/tools-core/post-finder"
+	postfinder "github.com/purstal/pbtools/tool-core/post-finder"
 
 	"github.com/purstal/pbtools/tools/simple-post-deleter/post-deleter/keyword-manager"
 )

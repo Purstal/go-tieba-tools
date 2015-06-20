@@ -5,7 +5,6 @@ import (
 
 	"github.com/purstal/pbtools/modules/http"
 	"github.com/purstal/pbtools/modules/misc"
-	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 )
 
@@ -31,7 +30,7 @@ func RLogin(acc *postbar.Account, username, password string) ([]byte, error) {
 	return http.Post("http://c.tieba.baidu.com/c/s/login", parameters)
 }
 
-func GetTbs(acc *postbar.Account) (string, error, *pberrors.PbError) {
+func GetTbs(acc *postbar.Account) (string, error, *postbar.PbError) {
 	resp, err := RGetTbs(acc)
 	if err != nil {
 		return "", err, nil
@@ -46,12 +45,12 @@ func GetTbs(acc *postbar.Account) (string, error, *pberrors.PbError) {
 		return "", err, nil
 	}
 	if x.ErrorCode != 0 {
-		return "", nil, pberrors.NewPbError(x.ErrorCode, x.ErrorMsg)
+		return "", nil, postbar.NewPbError(x.ErrorCode, x.ErrorMsg)
 	}
 	return x.Tbs, nil, nil
 }
 
-func Login(acc *postbar.Account, password string) (error, *pberrors.PbError) {
+func Login(acc *postbar.Account, password string) (error, *postbar.PbError) {
 	//resp, err := APILogin(acc, acc.ID, password)
 	resp, err := RLogin(acc, acc.ID, password)
 	if err != nil {
@@ -71,7 +70,7 @@ func Login(acc *postbar.Account, password string) (error, *pberrors.PbError) {
 		return err2, nil
 	}
 	if x.ErrorCode != 0 {
-		return nil, pberrors.NewPbError(x.ErrorCode, x.ErrorMsg)
+		return nil, postbar.NewPbError(x.ErrorCode, x.ErrorMsg)
 	}
 	acc.BDUSS = x.User.BDUSS
 	return nil, nil

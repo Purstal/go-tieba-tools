@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/apis"
 )
@@ -58,7 +57,7 @@ type OriginalReplyMessageStruct struct {
 	QuotePid     string `json:"quote_pid="`
 }
 
-func GetOriginalReplyMessageStruct(acc *postbar.Account) ([]OriginalReplyMessageStruct, error, *pberrors.PbError) {
+func GetOriginalReplyMessageStruct(acc *postbar.Account) ([]OriginalReplyMessageStruct, error, *postbar.PbError) {
 
 	resp, err := apis.RFeedReplyMe(acc)
 
@@ -80,14 +79,14 @@ func GetOriginalReplyMessageStruct(acc *postbar.Account) ([]OriginalReplyMessage
 	}
 
 	if msg.ErrorCode != 0 {
-		return nil, nil, pberrors.NewPbError(msg.ErrorCode, msg.ErrorMsg)
+		return nil, nil, postbar.NewPbError(msg.ErrorCode, msg.ErrorMsg)
 	}
 
 	return msg.ReplyList, nil, nil
 
 }
 
-func GettReplyMessage(acc *postbar.Account) ([]ReplyMessage, error, *pberrors.PbError) {
+func GettReplyMessage(acc *postbar.Account) ([]ReplyMessage, error, *postbar.PbError) {
 
 	_msgs, err, pberr := GetOriginalReplyMessageStruct(acc)
 

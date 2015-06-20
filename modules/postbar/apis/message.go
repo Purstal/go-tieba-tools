@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 
 	"github.com/purstal/pbtools/modules/http"
-	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 )
 
@@ -47,7 +46,7 @@ type Notice struct {
 	Count    int `json:"count,string"`
 }
 
-func GetNotice(acc *postbar.Account) (*Notice, error, *pberrors.PbError) {
+func GetNotice(acc *postbar.Account) (*Notice, error, *postbar.PbError) {
 	var parameters http.Parameters
 	postbar.ProcessParams(&parameters, acc)
 	resp, err := http.Post("http://c.tieba.baidu.com"+"/c/s/msg", parameters)
@@ -61,7 +60,7 @@ func GetNotice(acc *postbar.Account) (*Notice, error, *pberrors.PbError) {
 	}
 
 	if message.ErrorCode != 0 {
-		return nil, nil, pberrors.NewPbError(message.ErrorCode, message.ErrorMsg)
+		return nil, nil, postbar.NewPbError(message.ErrorCode, message.ErrorMsg)
 	}
 
 	err = json.Unmarshal(resp, &message)

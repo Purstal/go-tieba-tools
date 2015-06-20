@@ -6,7 +6,7 @@ import (
 	"regexp"
 
 	"github.com/purstal/pbtools/modules/postbar"
-	postfinder "github.com/purstal/pbtools/tools-core/post-finder"
+	postfinder "github.com/purstal/pbtools/tool-core/post-finder"
 )
 
 func (d *PostDeleter) CommonAssess(from string, account *postbar.Account, post postbar.IPost, tid uint64) postfinder.Control {

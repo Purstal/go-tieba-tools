@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/apis"
 )
@@ -60,7 +59,7 @@ type OriginalFloorStruct struct {
 }
 
 func GetOriginalFloorStruct(acc *postbar.Account, tid uint64,
-	isComment bool, id uint64, pn int) (*OriginalFloorStruct, error, *pberrors.PbError) {
+	isComment bool, id uint64, pn int) (*OriginalFloorStruct, error, *postbar.PbError) {
 	resp, err := apis.RGetFloor(acc, tid, isComment, id, pn)
 
 	if err != nil {
@@ -79,7 +78,7 @@ func GetOriginalFloorStruct(acc *postbar.Account, tid uint64,
 	}
 
 	if x.ErrorCode != 0 {
-		return &x, nil, pberrors.NewPbError(x.ErrorCode, x.ErrorMsg)
+		return &x, nil, postbar.NewPbError(x.ErrorCode, x.ErrorMsg)
 	}
 	return &x, nil, nil
 

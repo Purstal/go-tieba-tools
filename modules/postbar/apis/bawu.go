@@ -7,11 +7,10 @@ import (
 	//"github.com/purstal/pbtools/misc"
 
 	"github.com/purstal/pbtools/modules/http"
-	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 )
 
-func DeletePost(acc *postbar.Account, pid uint64) (error, *pberrors.PbError) {
+func DeletePost(acc *postbar.Account, pid uint64) (error, *postbar.PbError) {
 	//无论是主题/回复,亦或是楼中楼,只要有pid都可以用这个删..
 	var parameters http.Parameters
 
@@ -32,11 +31,11 @@ func DeletePost(acc *postbar.Account, pid uint64) (error, *pberrors.PbError) {
 	if err != nil {
 		return err, nil
 	}
-	return pberrors.ExtractError(resp)
+	return postbar.ExtractError(resp)
 
 }
 
-func DeleteThread(acc *postbar.Account, tid uint64) (error, *pberrors.PbError) {
+func DeleteThread(acc *postbar.Account, tid uint64) (error, *postbar.PbError) {
 	var parameters http.Parameters
 
 	tbs, err, pberr := GetTbs(acc)
@@ -55,13 +54,13 @@ func DeleteThread(acc *postbar.Account, tid uint64) (error, *pberrors.PbError) {
 	if err != nil {
 		return err, nil
 	}
-	return pberrors.ExtractError(resp)
+	return postbar.ExtractError(resp)
 }
 
 //pid得(dei)超准..
 func BlockIDWeb(BDUSS string,
 	forumID uint64, userName string, pid uint64, day int,
-	reason string) (error, *pberrors.PbError) {
+	reason string) (error, *postbar.PbError) {
 
 	var parameters http.Parameters
 	parameters.Add("day", strconv.Itoa(day))
@@ -95,12 +94,12 @@ func BlockIDWeb(BDUSS string,
 
 	json.Unmarshal(resp, &x)
 
-	return nil, pberrors.NewPbError(x.ErrorCode, x.ErrorMsg)
+	return nil, postbar.NewPbError(x.ErrorCode, x.ErrorMsg)
 }
 
 func CommitPrison(account *postbar.Account,
 	forumName string, forumID uint64, userName string, threadID, postID uint64,
-	day int, reason string) (error, *pberrors.PbError) {
+	day int, reason string) (error, *postbar.PbError) {
 	var parameters http.Parameters
 	parameters.Add("day", strconv.Itoa(day))
 	parameters.Add("fid", strconv.FormatUint(forumID, 10))
@@ -121,5 +120,5 @@ func CommitPrison(account *postbar.Account,
 	if err != nil {
 		return err, nil
 	}
-	return pberrors.ExtractError(resp)
+	return postbar.ExtractError(resp)
 }

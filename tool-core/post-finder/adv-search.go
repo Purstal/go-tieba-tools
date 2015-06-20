@@ -12,7 +12,6 @@ import (
 	//forum "github.com/purstal/pbtools/modules/advsearch/forum-win8-1.5.0.0"
 	thread "github.com/purstal/pbtools/modules/postbar/apis/thread-win8-1.5.0.0"
 	//"github.com/purstal/pbtools/modules/logs"
-	"github.com/purstal/pbtools/modules/pberrors"
 )
 
 /*
@@ -212,7 +211,7 @@ type FloorPage struct {
 }
 
 func TryGettingFloorPageStruct(accWin8 *postbar.Account, kz uint64,
-	isComment bool, id uint64, pn int) (*FloorPage, *pberrors.PbError) {
+	isComment bool, id uint64, pn int) (*FloorPage, *postbar.PbError) {
 	for i, err_count := 0, 0; ; {
 		tp, tpp, fpcs, fpe, err, pberr := floor.GetFloorStruct(accWin8, kz, isComment, id, pn)
 		floorPage := &FloorPage{

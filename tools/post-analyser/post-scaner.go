@@ -8,10 +8,9 @@ import (
 	"time"
 
 	"github.com/purstal/pbtools/modules/http"
-	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/thread-win8-1.5.0.0"
-	"github.com/purstal/pbtools/tools-core/utils"
+	"github.com/purstal/pbtools/tool-core/utils"
 )
 
 var acc = postbar.NewDefaultWindows8Account("")
@@ -309,7 +308,7 @@ type Thread struct {
 	Extra    *thread.ThreadPageExtra
 }
 
-func tryGettingThreadStruct(tid uint64, pn int) (*Thread, *pberrors.PbError) {
+func tryGettingThreadStruct(tid uint64, pn int) (*Thread, *postbar.PbError) {
 	for {
 		page, postList, extra, err, pberr := thread.GetThreadStruct(acc, tid, false, 0, pn, 30, false, true, false)
 		if err == nil {

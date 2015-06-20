@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	analyser "github.com/purstal/pbtools/tools-core/operation-analyser"
+	analyser "github.com/purstal/pbtools/tool-core/operation-analyser"
 
 	"github.com/purstal/pbtools/tools/operation-analyser/csv"
 )

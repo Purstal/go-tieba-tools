@@ -4,13 +4,12 @@ import (
 	//"encoding/json"
 	"time"
 
-	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 )
 
 func GetForumStruct(
 	acc *postbar.Account, kw string, rn,
-	pn int) (*ForumPage, []*ForumPageThread, *ForumPageExtra, error, *pberrors.PbError) {
+	pn int) (*ForumPage, []*ForumPageThread, *ForumPageExtra, error, *postbar.PbError) {
 
 	ofp, err, pberr := GetOriginalForumStruct(acc, kw, rn, pn)
 

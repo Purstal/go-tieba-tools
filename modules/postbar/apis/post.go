@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/purstal/pbtools/modules/http"
-	"github.com/purstal/pbtools/modules/pberrors"
 	"github.com/purstal/pbtools/modules/postbar"
 )
 
@@ -13,7 +12,7 @@ func _AddPost(acc *postbar.Account, content string, fid uint64, forumName string
 
 }
 
-func AddPost(accAndr *postbar.Account, content string, fid uint64, forumName string, tid uint64, floorNumber int, quoteID uint64) (error, *pberrors.PbError) {
+func AddPost(accAndr *postbar.Account, content string, fid uint64, forumName string, tid uint64, floorNumber int, quoteID uint64) (error, *postbar.PbError) {
 	var parameters http.Parameters
 	parameters.Add("anonymous", "1")
 	parameters.Add("content", content)

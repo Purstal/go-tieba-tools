@@ -1,4 +1,4 @@
-package pberrors
+package postbar
 
 import "encoding/json"
 import (
