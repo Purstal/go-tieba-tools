@@ -4,7 +4,7 @@
 
 * [account.go](#accountgo)
 	* [RLogin](#rlogin)(acc, userName, password)
-		* [Login](#Login)(acc, password)
+		* [Login](#login)(acc, password)
 	* [IsLogin](#islogin)(BDUSS)
 * [bawu.go](#bawugo)
 	* [DeletePost](#deletepost)(acc, pid)
@@ -158,6 +158,6 @@
 	func GetUserInfo(acc *postbar.Account, uid uint64) (*UserInfo, error)
 干嘛用的来的..貌似只是用来从用户uid获得用户名的...
 
-##
+##其他
 	以前还有点赞,发主题,置顶/取消置顶,加精/取消加精等api,后来觉得没什么用就扔了...
 	不过确实意义不大,除了点赞外其他都要跟验证码甚至手机验证打交道吧...
