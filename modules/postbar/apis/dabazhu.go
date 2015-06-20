@@ -24,8 +24,8 @@ func CancelBlockIDWeb(acc *postbar.Account,
 
 	parameters.Add("ie", "gbk")
 	parameters.Add("type", "0")
-	parameters.Add("list%5B0%5D%5Buser_id%5D", userID)
-	parameters.Add("list%5B0%5D%5Buser_name%5D", userName)
+	parameters.Add("list[0][user_id]", userID)
+	parameters.Add("list[0][user_name]", userName)
 
 	var cookies http.Cookies
 	cookies.Add("BDUSS", acc.BDUSS)

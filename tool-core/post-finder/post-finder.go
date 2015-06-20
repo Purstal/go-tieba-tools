@@ -50,7 +50,7 @@ func init() {
 	InitDebugger()
 }
 
-func NewPostFinder(accWin8, accAndr *postbar.Account, forumName string, yield func(*PostFinder)) (*PostFinder, error) {
+func NewPostFinder(accWin8, accAndr *postbar.Account, forumName string, yield func(*PostFinder), debug bool) (*PostFinder, error) {
 	var postFinder PostFinder
 	postFinder.Debug.StartTime = time.Now()
 
@@ -82,7 +82,9 @@ func NewPostFinder(accWin8, accAndr *postbar.Account, forumName string, yield fu
 			time.Second*3, time.Second*3, time.Second*3)
 	*/
 
-	postFinder.Debugger = NewDebugger(forumName, &postFinder, time.Second/4)
+	if debug {
+		postFinder.Debugger = NewDebugger(forumName, &postFinder, time.Second/4)
+	}
 
 	return &postFinder, nil
 

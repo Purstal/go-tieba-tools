@@ -33,7 +33,7 @@ type PostDeleter struct {
 func NewPostDeleter(accWin8, accAndr *postbar.Account, forumName string, forumID uint64,
 	content_RxKw_FileName, UserName_RxKw_FileName, Tid_Whitelist_FileName,
 	UserName_Whitelist_FileName, BawuList_FileName string,
-	logger, operationLogger *logs.Logger) *PostDeleter {
+	logger, operationLogger *logs.Logger, debug bool) *PostDeleter {
 	var deleter PostDeleter
 	var err error
 
@@ -74,7 +74,7 @@ func NewPostDeleter(accWin8, accAndr *postbar.Account, forumName string, forumID
 			postfinder.AdvSearchAssessor = deleter.AdvSearchAssessor
 			postfinder.PostAssessor = deleter.PostAssessor
 			postfinder.CommentAssessor = deleter.CommentAssessor
-		}); err != nil {
+		}, debug); err != nil {
 		return nil
 	}
 	return &deleter

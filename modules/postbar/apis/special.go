@@ -116,7 +116,7 @@ func RGetTbsWeb(BDUSS string) ([]byte, error) {
 
 func GetTbsWeb(BDUSS string) (string, error) {
 
-	data, err := GetTbsWeb(BDUSS)
+	data, err := RGetTbsWeb(BDUSS)
 
 	if err != nil {
 		return "", err

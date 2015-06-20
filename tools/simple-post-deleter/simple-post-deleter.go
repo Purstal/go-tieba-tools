@@ -20,11 +20,13 @@ import (
 var accWin8 *postbar.Account
 var accAndr *postbar.Account
 
+/*
 func init() {
 	go func() {
 		http.ListenAndServe(":33101", nil)
 	}()
 }
+*/
 
 type Settings struct {
 	BDUSS     string
@@ -36,6 +38,8 @@ type Settings struct {
 	TidWhiteListFilePath      string `json:"tid白名单文件"`
 	UserNameWhiteListFilePath string `json:"用户名白名单文件"`
 	BawuListFilePath          string `json:"吧务列表文件"`
+
+	DebugPort int `json:"debug端口"`
 }
 
 var settings *Settings
@@ -72,6 +76,12 @@ func main() {
 		logs.Warn("未设置BDUSS.")
 	}
 
+	if settings.DebugPort != 0 {
+		go func() {
+			http.ListenAndServe(fmt.Sprintf("localhost:%d", settings.DebugPort), nil)
+		}()
+	}
+
 	var accAndr = postbar.NewDefaultAndroidAccount("")
 	var accWin8 = postbar.NewDefaultWindows8Account("")
 	accWin8.BDUSS = settings.BDUSS
@@ -99,7 +109,7 @@ func main() {
 	d := postdeleter.NewPostDeleter(accWin8, accAndr, settings.ForumName, settings.ForumID,
 		settings.ContentRegexpFilePath, settings.UserNameRegexpFilePath,
 		settings.TidWhiteListFilePath, settings.UserNameWhiteListFilePath, settings.BawuListFilePath,
-		logger, opLogger)
+		logger, opLogger, settings.DebugPort != 0)
 
 	if d == nil {
 		logs.Fatal("无法启动删贴机,退出.")
