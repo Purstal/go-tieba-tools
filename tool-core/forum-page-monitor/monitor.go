@@ -53,6 +53,7 @@ func NewForumPageMonitor(accWin8 *postbar.Account, kw string,
 			go func() {
 				fp, fpts, fpe, err, pberr := forum.GetForumStruct(accWin8, kw, monitor.rn, 1)
 				if err != nil || pberr != nil {
+					//fmt.Println(accWin8)
 					fmt.Println("获取主页时出错: ", err, pberr)
 					return
 				}

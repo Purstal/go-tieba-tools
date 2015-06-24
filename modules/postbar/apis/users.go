@@ -8,10 +8,12 @@ import (
 	"github.com/purstal/pbtools/modules/postbar"
 )
 
+/*
 type ForumLikePageForumList struct {
 	NonGconForum []ForumLikePageForum `json:"non-gconforum"`
 	GconForum    []ForumLikePageForum `json:"gconforum"`
 }
+*/
 
 type ForumLikePageForum struct {
 	ID           uint64 `json:"id,string"`
@@ -20,26 +22,37 @@ type ForumLikePageForum struct {
 	CurrentScore int    `json:"cur_score,string"`
 }
 
-//无论隐藏与否
-func GetUserForumLike(acc *postbar.Account, uid uint64) (*ForumLikePageForumList, error) {
+//无论隐藏与否 //只能取前200个贴吧
+func GetUserForumLike(accWin8 *postbar.Account /*, uid uint64*/) ([]ForumLikePageForum, error, *postbar.PbError) {
 
 	var parameters http.Parameters
 
-	parameters.Add("uid", strconv.FormatUint(uid, 10))
+	//parameters.Add("uid", strconv.FormatUint(uid, 10))
 
-	postbar.ProcessParams(&parameters, acc)
+	postbar.ProcessParams(&parameters, accWin8)
 
 	resp, err := http.Post("http://c.tieba.baidu.com/c/f/forum/like", parameters)
 	if err != nil {
-		return nil, err
+		return nil, err, nil
 	}
 
 	var data struct {
-		ForumList ForumLikePageForumList `json:"forum_list"`
+		ForumList []ForumLikePageForum `json:"forum_list"`
+		ErrorCode int                  `json:"error_code,string"`
+		ErrorMsg  string               `json:"error_msg"`
 	}
+
 	err2 := json.Unmarshal(resp, &data)
 
-	return &data.ForumList, err2
+	if err2 != nil {
+		return nil, err2, nil
+	}
+
+	if data.ErrorCode != 0 {
+		return nil, nil, postbar.NewPbError(data.ErrorCode, data.ErrorMsg)
+	}
+
+	return data.ForumList, nil, nil
 
 }
 

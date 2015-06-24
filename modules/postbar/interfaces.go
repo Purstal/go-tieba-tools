@@ -43,7 +43,7 @@ type IThread interface {
 	TGetIsTop() (bool, bool)
 	TGetIsGood() (bool, bool)
 	TGetAuthor() IAuthor
-	TGetLastReplyer() (bool, IAuthor)
+	TGetLastReplyer() IAuthor
 	//TGetOriginalContent() (bool, []interface{})
 	TGetContentList() []Content
 	TContentIsComplete() bool

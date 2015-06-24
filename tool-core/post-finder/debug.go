@@ -56,7 +56,7 @@ func NewDebugger(name string, Finder *PostFinder, minInterval time.Duration) *De
 	http.HandleFunc(debuggerURI+"json/task/logs", debugger.GetTaskLogs)
 	http.HandleFunc(debuggerURI+"json/task/demands", debugger.GetTaskDemands)
 	http.HandleFunc(debuggerURI+"json/found-pids-pool", debugger.GetFoundPidsPool)
-	Logger.Debug("debugger:", name, debuggerURI+"json/tasks")
+	logger.Debug("debugger:", name, debuggerURI+"json/tasks")
 
 	return &debugger
 }

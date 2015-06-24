@@ -82,7 +82,7 @@ func NewSearchTask(manager *SearchTaskManager, firstDemand Demand) *SearchTask {
 				task.Timer.Reset(interval)
 			} else {
 				manager.RemoveTask(task.ID)
-				Logger.Error("放弃高级搜索任务:", task.ID)
+				logger.Error("放弃高级搜索任务:", task.ID)
 				return
 			}
 			task.Debug.Log.Log(fmt.Sprintf("[%s|处理任务]结束.剩余需求数:%d;下次进行间隔:%s.",

@@ -1,6 +1,7 @@
 package post_deleter
 
 import (
+	"os"
 	"time"
 
 	"github.com/purstal/pbtools/modules/logs"
@@ -27,43 +28,39 @@ type PostDeleter struct {
 	Records Records
 
 	Logger   *logs.Logger
-	OpLogger *logs.Logger
+	OpLogger *OperationLogger
 }
 
 func NewPostDeleter(accWin8, accAndr *postbar.Account, forumName string, forumID uint64,
 	content_RxKw_FileName, UserName_RxKw_FileName, Tid_Whitelist_FileName,
 	UserName_Whitelist_FileName, BawuList_FileName string,
-	logger, operationLogger *logs.Logger, debug bool) *PostDeleter {
+	debug bool, logDir string) *PostDeleter {
 	var deleter PostDeleter
 	var err error
 
-	deleter.AccWin8, deleter.AccAndr = accWin8, accAndr
-	deleter.Logger, deleter.OpLogger = logger, operationLogger
-	deleter.ForumID, deleter.ForumName = forumID, forumName
+	if !initLogger(&deleter, logDir) {
+		return nil
+	}
 
-	deleter.Records.RulesThread_Tids, deleter.Records.ServerListThread_Tids,
-		deleter.Records.WaterThread_Tids =
-		map[uint64]struct{}{}, map[uint64]struct{}{}, map[uint64]struct{}{}
+	deleter.OpLogger = NewOperationLogger(logDir)
+	if deleter.OpLogger == nil {
+		return nil
+	}
 
 	if deleter.Content_RxKw = newRxKwManager(content_RxKw_FileName, deleter.Logger); deleter.Content_RxKw == nil {
 		return nil
-	}
-
-	if deleter.UserName_RxKw = newRxKwManager(UserName_RxKw_FileName, deleter.Logger); deleter.UserName_RxKw == nil {
+	} else if deleter.UserName_RxKw = newRxKwManager(UserName_RxKw_FileName, deleter.Logger); deleter.UserName_RxKw == nil {
+		return nil
+	} else if deleter.Tid_Whitelist = newU64KwManager(Tid_Whitelist_FileName, deleter.Logger); deleter.Tid_Whitelist == nil {
+		return nil
+	} else if deleter.UserName_Whitelist = newStrKwManager(UserName_Whitelist_FileName, deleter.Logger); deleter.Tid_Whitelist == nil {
+		return nil
+	} else if deleter.BawuList = newStrKwManager(BawuList_FileName, deleter.Logger); deleter.Tid_Whitelist == nil {
 		return nil
 	}
 
-	if deleter.Tid_Whitelist = newU64KwManager(Tid_Whitelist_FileName, deleter.Logger); deleter.Tid_Whitelist == nil {
-		return nil
-	}
-
-	if deleter.UserName_Whitelist = newStrKwManager(UserName_Whitelist_FileName, deleter.Logger); deleter.Tid_Whitelist == nil {
-		return nil
-	}
-
-	if deleter.BawuList = newStrKwManager(BawuList_FileName, deleter.Logger); deleter.Tid_Whitelist == nil {
-		return nil
-	}
+	deleter.AccWin8, deleter.AccAndr = accWin8, accAndr
+	deleter.ForumID, deleter.ForumName = forumID, forumName
 
 	if deleter.PostFinder, err = postfinder.NewPostFinder(
 		deleter.AccWin8, deleter.AccAndr, forumName,
@@ -74,14 +71,30 @@ func NewPostDeleter(accWin8, accAndr *postbar.Account, forumName string, forumID
 			postfinder.AdvSearchAssessor = deleter.AdvSearchAssessor
 			postfinder.PostAssessor = deleter.PostAssessor
 			postfinder.CommentAssessor = deleter.CommentAssessor
-		}, debug); err != nil {
+		}, debug, logDir); err != nil {
 		return nil
 	}
+
+	deleter.Records.RulesThread_Tids, deleter.Records.ServerListThread_Tids,
+		deleter.Records.WaterThread_Tids =
+		map[uint64]struct{}{}, map[uint64]struct{}{}, map[uint64]struct{}{}
+
 	return &deleter
 }
 
 func (p *PostDeleter) Run(monitorInterval time.Duration) {
 	p.PostFinder.Run(monitorInterval)
+}
+
+func initLogger(pd *PostDeleter, logDir string) bool {
+	logFile, err := os.Create(logDir + "post-deleter-日志.log")
+	if err != nil {
+		logs.Fatal("无法创建log文件.", err)
+		return false
+	}
+	pd.Logger = logs.NewLogger(logs.DebugLevel, os.Stdout, logFile)
+	logs.DefaultLogger = pd.Logger
+	return true
 }
 
 func newRxKwManager(fileName string, logger *logs.Logger) *kw_manager.RegexpKeywordManager {

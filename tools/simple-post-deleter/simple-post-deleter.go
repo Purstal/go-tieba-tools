@@ -42,23 +42,14 @@ type Settings struct {
 	DebugPort int `json:"debug端口"`
 }
 
-var settings *Settings
-
 func main() {
-	os.MkdirAll("log/simplePostDeleter", 0644)
-	logfile, err1 := os.Create("log/simplePostDeleter/" + time.Now().Format("20060102-150405-通常.log"))
-	if err1 != nil {
-		logs.Fatal("无法创建log文件.", err1)
-	} else {
-		defer logfile.Close()
-	}
+	var logDir = time.Now().Format("log/20060102-150405-post-deleter/")
 
-	logger := logs.NewLogger(logs.DebugLevel, os.Stdout, logfile)
-	logs.SetDefaultLogger(logger)
-	logs.DefaultLogger.LogWithTime = false
+	os.Mkdir(logDir, 0644)
+
 	logs.Info("删贴机启动", time.Now())
 
-	keepUpdatingSettings()
+	var settings = keepUpdatingSettings()
 	{
 		var BDUSS = settings.BDUSS
 		if BDUSS != "" {
@@ -87,14 +78,6 @@ func main() {
 	accWin8.BDUSS = settings.BDUSS
 	accAndr.BDUSS = settings.BDUSS
 
-	os.MkdirAll("log/simplePostDeleter", 0644)
-	opLogfile, err2 := os.Create("log/simplePostDeleter/" + time.Now().Format("20060102-150405-操作.log"))
-	if err2 != nil {
-		logs.Fatal("无法创建log文件.", err2)
-	} else {
-		defer logfile.Close()
-	}
-
 	if settings.ForumID == 0 {
 		logs.Info("设置中未提供ForumID,自动获取.")
 		settings.ForumID = getFid(settings.ForumName)
@@ -104,12 +87,10 @@ func main() {
 		}
 	}
 
-	opLogger := logs.NewLogger(logs.DebugLevel, os.Stdout, opLogfile)
-
 	d := postdeleter.NewPostDeleter(accWin8, accAndr, settings.ForumName, settings.ForumID,
 		settings.ContentRegexpFilePath, settings.UserNameRegexpFilePath,
 		settings.TidWhiteListFilePath, settings.UserNameWhiteListFilePath, settings.BawuListFilePath,
-		logger, opLogger, settings.DebugPort != 0)
+		settings.DebugPort != 0, logDir)
 
 	if d == nil {
 		logs.Fatal("无法启动删贴机,退出.")
@@ -183,6 +164,8 @@ func useless() {
 
 func LoadSettings(fileName string) (*Settings, error) {
 
+	var settings Settings
+
 	file, err := os.Open(fileName)
 
 	if err != nil {
@@ -197,8 +180,6 @@ func LoadSettings(fileName string) (*Settings, error) {
 		data = data[3:]
 	}
 
-	var settings Settings
-
 	err3 := json.Unmarshal(data, &settings)
 	if err3 != nil {
 		return nil, err3
@@ -206,7 +187,8 @@ func LoadSettings(fileName string) (*Settings, error) {
 	return &settings, nil
 }
 
-func keepUpdatingSettings() {
+func keepUpdatingSettings() *Settings {
+	var settings Settings
 	var fileName string
 	if len(os.Args) == 1 {
 		fileName = "删贴机设置.json"
@@ -236,7 +218,7 @@ func keepUpdatingSettings() {
 					logs.Fatal("更新设置文件失败,将继续使用旧设置:", err)
 				} else {
 					logs.Info("更新设置文件成功(然而这并没有什么用(除了第一次之外)).")
-					settings = _settings
+					settings = *_settings
 				}
 			}
 
@@ -252,4 +234,6 @@ func keepUpdatingSettings() {
 
 	<-firstTimeWaitChan
 	close(firstTimeWaitChan)
+
+	return &settings
 }

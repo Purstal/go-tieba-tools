@@ -29,7 +29,7 @@ func (pd *PostFinder) FindAndAnalyseNewPostFromThreadPage(forumPageThread *Forum
 			go func() { pd.SearchTaskManager.ReportFoundPid(post.Author.ID, post.Pid, post.PostTime) }()
 
 			if i != 0 {
-				Logger.Info(MakePostLogString(GetServerTimeFromExtra(threadPage.Extra),
+				logger.Info(MakePostLogString(GetServerTimeFromExtra(threadPage.Extra),
 					forumPageThread.Thread.Tid, post.Pid, 0, forumPageThread.Thread.LastReplyer.ID), "额外发现新回复 ")
 			}
 			threadPage.Thread.ForumPageThread = &forumPageThread.Thread
@@ -66,7 +66,7 @@ func (pd *PostFinder) FindAndAnalyseNewThread(forumPageThread *ForumPageThread) 
 
 	floor1 := threadPage.PostList[0]
 	if floor1.PostTime != forumPageThread.Thread.LastReplyTime {
-		Logger.Warn(MakePostLogString(GetServerTimeFromExtra(threadPage.Extra), forumPageThread.Thread.Tid,
+		logger.Warn(MakePostLogString(GetServerTimeFromExtra(threadPage.Extra), forumPageThread.Thread.Tid,
 			floor1.Pid, 0, floor1.Author.ID), "最初判断为新主题,但不是新主题:", "时间不匹配:"+floor1.PostTime.String(),
 			"!=", forumPageThread.Thread.LastReplyTime.String())
 		pd.FindAndAnalyseNewPost(forumPageThread)
@@ -111,7 +111,7 @@ func TryGettingThreadPageStruct(accWin8 *postbar.Account, kz uint64,
 				err_count++
 				continue
 			}
-			GettingStructLogger.Fatal("尝试获取主题结构无法进展,放弃.参数:", "kz=", kz, ",mark=", mark, ",pid=",
+			unmarshallerLogger.Fatal("尝试获取主题结构无法进展,放弃.参数:", "kz=", kz, ",mark=", mark, ",pid=",
 				pid, ",pn=", pn, ",rn=", rn, ",with_floor=", withFloor, ",see_lz=", seeLz, ",r=", r, ";错误:", err)
 			return nil, nil
 
@@ -138,7 +138,7 @@ func TryGettingThreadPageStruct2(accWin8 *postbar.Account, kz uint64,
 	for j := 0; ; {
 		thread, pberr := TryGettingThreadPageStruct(accWin8, kz, mark, pid, pn, rn, withFloor, seeLz, r)
 		if pberr != nil {
-			Logger.Error(MakePostLogString(GetServerTimeFromExtra(thread.Extra), kz, 0, 0, 0),
+			logger.Error(MakePostLogString(GetServerTimeFromExtra(thread.Extra), kz, 0, 0, 0),
 				"尝试获取主题时出错,放弃:", pberr, ".")
 			return nil
 		} else if thread == nil {
@@ -146,12 +146,12 @@ func TryGettingThreadPageStruct2(accWin8 *postbar.Account, kz uint64,
 		} else if len(thread.PostList) != 0 {
 			return thread
 		} else if j < 3 {
-			Logger.Error(MakePostLogString(GetServerTimeFromExtra(thread.Extra), kz, 0, 0, 0),
+			logger.Error(MakePostLogString(GetServerTimeFromExtra(thread.Extra), kz, 0, 0, 0),
 				"返回的主题回贴列表为空,重试.")
 			j++
 			continue
 		} else {
-			Logger.Error(MakePostLogString(GetServerTimeFromExtra(thread.Extra), kz, 0, 0, 0),
+			logger.Error(MakePostLogString(GetServerTimeFromExtra(thread.Extra), kz, 0, 0, 0),
 				"尝试获取主题时出错,放弃:", "返回的主题回贴列表为空.")
 			return nil
 		}

@@ -12,10 +12,12 @@ var cStdout io.Writer = ansicolor.NewAnsiColorWriter(os.Stdout)
 var cStderr io.Writer = ansicolor.NewAnsiColorWriter(os.Stderr)
 
 func (logger *Logger) LogColorful(prefix, colorCode string, content ...interface{}) {
+	logger.Lock.Lock()
 	logger.LogTime()
 	for _, writer := range logger.Writers {
 		logColorful(writer, logger.Name, prefix, colorCode, content...)
 	}
+	logger.Lock.Unlock()
 }
 
 func logColorful(writer io.Writer, loggerName, prefix, colorCode string, content ...interface{}) {

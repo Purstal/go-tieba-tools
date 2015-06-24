@@ -2,40 +2,41 @@ package post_finder
 
 import (
 	"os"
-	"time"
 
 	"github.com/purstal/pbtools/modules/logs"
 )
 
-var (
-	Logger              *logs.Logger //default
-	DelayerLogger       *logs.Logger //
-	GettingStructLogger *logs.Logger
-)
+var logger, delayerLogger, unmarshallerLogger *logs.Logger
 
-var logDir string
+func initLoggers(pf *PostFinder, logDir string) (ok bool) {
+	os.MkdirAll(logDir, 0644)
 
-func InitLoggers() {
-	logDir = "log/PostFinder/" + time.Now().Format("20060102_150405") + "/"
-	os.MkdirAll(logDir, 0744)
+	initFunc := func(loggerName string) *logs.Logger {
+		logFile, err := os.Create(logDir + loggerName)
+		if err != nil {
+			logs.Fatal("无法创建log文件.", err)
+			return nil
+		}
+		return logs.NewLogger(logs.DebugLevel, os.Stdout, logFile)
+	}
 
-	if logFile, err := os.Create(logDir + "log"); err == nil {
-		Logger = logs.NewLoggerWithName("PostFinder", logs.DebugLevel, os.Stdout, logFile)
-		Logger.LogWithTime = false
-	} else {
-		panic("PostFinder.Logger初始化失败,创建log文件失败:" + err.Error())
+	var loggers [4]*logs.Logger
+
+	for i, loggerName := range []string{
+		"post-finder-日志.log",
+		"post-finder-延时搜索日志.log",
+		"post-finder-解组错误记录.log",
+	} {
+		loggers[i] = initFunc(loggerName)
+		if loggers[i] == nil {
+			return false
+		}
 	}
-	if delayer_logFile, err := os.Create(logDir + "log_delayer"); err == nil {
-		DelayerLogger = logs.NewLoggerWithName("PostFinder-Delayer", logs.DebugLevel, os.Stdout, delayer_logFile)
-	} else {
-		Logger.Fatal("PostFinder.DelayerLogger初始化失败,创建log文件失败:" + err.Error())
-		panic("PostFinder.DelayerLogger初始化失败,创建log文件失败:" + err.Error())
-	}
-	if gettingStruct_logFile, err := os.Create(logDir + "log_getting_struct"); err == nil {
-		GettingStructLogger = logs.NewLoggerWithName("PostFinder-GettingStruct", logs.DebugLevel, os.Stdout, gettingStruct_logFile)
-	} else {
-		Logger.Fatal("PostFinder.GettingStructLogger初始化失败,创建log文件失败:" + err.Error())
-		panic("PostFinder.GettingStructLogger初始化失败,创建log文件失败:" + err.Error())
-	}
+
+	logger = loggers[0]
+	delayerLogger = loggers[1]
+	unmarshallerLogger = loggers[2]
+
+	return true
 
 }

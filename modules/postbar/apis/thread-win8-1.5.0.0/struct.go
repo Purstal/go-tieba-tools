@@ -92,11 +92,11 @@ func (t ThreadPage) TGetIsGood() (bool, bool) {
 	return false, false
 }
 func (t ThreadPage) TGetAuthor() postbar.IAuthor { return t.Author }
-func (t ThreadPage) TGetLastReplyer() (bool, postbar.IAuthor) {
+func (t ThreadPage) TGetLastReplyer() postbar.IAuthor {
 	if t.ForumPageThread != nil {
 		return t.ForumPageThread.TGetLastReplyer()
 	}
-	return false, forum.ForumPageThreadAuthor{}
+	return nil
 
 }
 func (t ThreadPage) TGetOriginalContentList() (bool, []interface{}) {

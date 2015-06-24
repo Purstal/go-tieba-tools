@@ -52,14 +52,14 @@ type ForumPageThread struct {
 	//Forum *ForumPage
 }
 
-func (t ForumPageThread) TGetTid() uint64                          { return t.Tid }
-func (t ForumPageThread) TGetTitle() string                        { return t.Title }
-func (t ForumPageThread) TGetReplyNum() (bool, uint32)             { return true, t.ReplyNum }
-func (t ForumPageThread) TGetLastReplyTime() (bool, time.Time)     { return true, t.LastReplyTime }
-func (t ForumPageThread) TGetIsTop() (bool, bool)                  { return true, t.IsTop }
-func (t ForumPageThread) TGetIsGood() (bool, bool)                 { return true, t.IsGood }
-func (t ForumPageThread) TGetAuthor() postbar.IAuthor              { return t.Author }
-func (t ForumPageThread) TGetLastReplyer() (bool, postbar.IAuthor) { return true, t.LastReplyer }
+func (t ForumPageThread) TGetTid() uint64                      { return t.Tid }
+func (t ForumPageThread) TGetTitle() string                    { return t.Title }
+func (t ForumPageThread) TGetReplyNum() (bool, uint32)         { return true, t.ReplyNum }
+func (t ForumPageThread) TGetLastReplyTime() (bool, time.Time) { return true, t.LastReplyTime }
+func (t ForumPageThread) TGetIsTop() (bool, bool)              { return true, t.IsTop }
+func (t ForumPageThread) TGetIsGood() (bool, bool)             { return true, t.IsGood }
+func (t ForumPageThread) TGetAuthor() postbar.IAuthor          { return t.Author }
+func (t ForumPageThread) TGetLastReplyer() postbar.IAuthor     { return t.LastReplyer }
 func (t ForumPageThread) TGetOriginalContentList() (bool, []interface{}) {
 	return true, append(t.Abstract, t.MediaList...)
 }

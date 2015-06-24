@@ -55,6 +55,12 @@ type AdvSearchAuthor struct {
 	Name string
 }
 
+type AdvSearchThread struct {
+	postbar.IThread
+	Tid   uint64
+	Title string
+}
+
 func (a AdvSearchAuthor) AGetID() (bool, uint64)                         { return false, 0 }
 func (a AdvSearchAuthor) AGetName() string                               { return a.Name }
 func (a AdvSearchAuthor) AGetIsLike() (bool, bool)                       { return false, false }
@@ -69,6 +75,19 @@ func (a AdvSearchResult) PGetContentList() []postbar.Content {
 }
 func (a AdvSearchResult) PContentIsComplete() bool    { return false } //如果只有文字,<=120
 func (a AdvSearchResult) PGetAuthor() postbar.IAuthor { return a.Author }
+
+func (t AdvSearchThread) TGetTid() uint64                      { return t.Tid }
+func (t AdvSearchThread) TGetTitle() string                    { return t.Title }
+func (t AdvSearchThread) TGetReplyNum() (bool, uint32)         { return false, 0 }
+func (t AdvSearchThread) TGetLastReplyTime() (bool, time.Time) { return false, time.Time{} }
+func (t AdvSearchThread) TGetIsTop() (bool, bool)              { return false, false }
+func (t AdvSearchThread) TGetIsGood() (bool, bool)             { return false, false }
+func (t AdvSearchThread) TGetAuthor() postbar.IAuthor          { return nil }
+func (t AdvSearchThread) TGetLastReplyer() postbar.IAuthor     { return nil }
+func (t AdvSearchThread) TGetContentList() []postbar.Content {
+	return nil
+}
+func (t AdvSearchThread) TContentIsComplete() bool { return false }
 
 func GetAdvSearchResultList(kw, un string, rn,
 	pn int) ([]AdvSearchResult, error) {

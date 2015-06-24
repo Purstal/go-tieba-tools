@@ -9,25 +9,9 @@ import (
 	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/advsearch"
 	floor "github.com/purstal/pbtools/modules/postbar/apis/floor-andr-6.1.3"
-	//forum "github.com/purstal/pbtools/modules/advsearch/forum-win8-1.5.0.0"
 	thread "github.com/purstal/pbtools/modules/postbar/apis/thread-win8-1.5.0.0"
-	//"github.com/purstal/pbtools/modules/logs"
 )
 
-/*
-type AdvSearcher struct {
-	SuccessPools SuccessPools
-	PostFinder  *PostFinder
-}
-
-func NewAdvSearcher(PostFinder *PostFinder) *AdvSearcher {
-	var searcher AdvSearcher
-	searcher.PostFinder = PostFinder
-	searcher.SuccessPools = MakeSuccessPools()
-	return &searcher
-
-}
-*/
 type FloorPageComment struct {
 	Thread  *thread.ThreadPage
 	Post    *thread.ThreadPagePost
@@ -90,10 +74,7 @@ ResultIter:
 			if comment.PostTime.After(*LeastTime) {
 				*LeastTime = comment.PostTime
 			}
-			//Logger.Debug("Merry", comment.Spid, result.Pid)
-			//debug_pids = append(debug_pids, comment.Spid)
 			if comment.Spid == result.Pid {
-				//Logger.Debug("Renko")
 				for i, forumPageThread := range demands {
 					if comment.PostTime == forumPageThread.LastReplyTime && floorPage.Thread.Tid == forumPageThread.Tid {
 						floorPage.Thread.ForumPageThread = forumPageThread
@@ -125,7 +106,7 @@ ResultIter:
 				*LeastTime = post.PostTime
 			}
 			if post.Pid == result.Pid {
-				//Logger.Debug("Renko")
+				//logger.Debug("Renko")
 				for i, forumPageThread := range demands {
 					if post.PostTime == forumPageThread.LastReplyTime && threadPage.Thread.Tid == forumPageThread.Tid {
 						threadPage.Thread.ForumPageThread = forumPageThread
@@ -142,7 +123,7 @@ ResultIter:
 			}
 		}
 
-		Logger.Debug("高级搜索找到,楼层页面和主题页面中都未找到:", result)
+		logger.Debug("高级搜索找到,楼层页面和主题页面中都未找到:", result)
 	}
 }
 
@@ -229,7 +210,7 @@ func TryGettingFloorPageStruct(accWin8 *postbar.Account, kz uint64,
 			if isComment {
 				pidType = "spid"
 			}
-			GettingStructLogger.Fatal("尝试获取楼层结构无法进展,放弃.参数:", "kz=", kz, ", "+pidType+"=",
+			unmarshallerLogger.Fatal("尝试获取楼层结构无法进展,放弃.参数:", "kz=", kz, ", "+pidType+"=",
 				id, ",pn=", pn, ";错误:", err)
 
 			return nil, nil
@@ -256,14 +237,14 @@ func TryGettingFloorPageStruct2(accWin8 *postbar.Account, kz uint64,
 		floorPage, pberr := TryGettingFloorPageStruct(accWin8, kz, isComment, id, pn)
 		if pberr != nil {
 			if i < 3 {
-				//Logger.Error(MakePostLogString(GetServerTimeFromExtra(floorPage.Extra), kz, 0), "尝试获取楼层时出错,重试:", pberr, ".")
+				//logger.Error(MakePostLogString(GetServerTimeFromExtra(floorPage.Extra), kz, 0), "尝试获取楼层时出错,重试:", pberr, ".")
 				i++
 				continue
 			} else {
 				if pberr.ErrorCode == 4 {
 					return nil, true
 				} else {
-					Logger.Error(MakePostLogString(GetServerTimeFromExtra(floorPage.Extra), kz, 0, 0, 0),
+					logger.Error(MakePostLogString(GetServerTimeFromExtra(floorPage.Extra), kz, 0, 0, 0),
 						"尝试获取楼层时出错,多次重试未果,放弃:", pberr, ".")
 					return nil, false
 				}
@@ -273,11 +254,11 @@ func TryGettingFloorPageStruct2(accWin8 *postbar.Account, kz uint64,
 		} else if len(floorPage.CommentList) != 0 {
 			return floorPage, false
 		} else if j < 3 {
-			//Logger.Error(MakePostLogString(GetServerTimeFromExtra(floorPage.Extra), kz, 0), "尝试获取楼层时出错,重试:返回的楼层回贴列表为空.")
+			//logger.Error(MakePostLogString(GetServerTimeFromExtra(floorPage.Extra), kz, 0), "尝试获取楼层时出错,重试:返回的楼层回贴列表为空.")
 			j++
 			continue
 		} else {
-			Logger.Error(MakePostLogString(GetServerTimeFromExtra(floorPage.Extra), kz, 0, 0, 0),
+			logger.Error(MakePostLogString(GetServerTimeFromExtra(floorPage.Extra), kz, 0, 0, 0),
 				"尝试获取楼层时出错,多次重试未果,放弃:", "返回的楼层回贴列表为空.")
 			return nil, false
 		}

@@ -3,6 +3,7 @@ package logs
 import (
 	"fmt"
 	"io"
+	"sync"
 	"time"
 )
 
@@ -33,6 +34,8 @@ type Logger struct {
 	LastLogTime time.Time
 
 	ColorfulConsoleOutput bool
+
+	Lock sync.Mutex
 }
 
 func NewLogger(level uint8, w ...io.Writer) *Logger {
@@ -55,10 +58,12 @@ func NewLoggerWithName(name string, level uint8, w ...io.Writer) *Logger {
 }
 
 func (logger *Logger) Log(prefix string, content ...interface{}) {
+	logger.Lock.Lock()
 	logger.LogTime()
 	for _, writer := range logger.Writers {
 		log(writer, logger.Name, prefix, content...)
 	}
+	logger.Lock.Unlock()
 }
 
 func log(writer io.Writer, loggerName, prefix string, content ...interface{}) {

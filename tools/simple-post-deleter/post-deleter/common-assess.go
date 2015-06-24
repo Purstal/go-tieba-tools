@@ -9,10 +9,11 @@ import (
 	postfinder "github.com/purstal/pbtools/tool-core/post-finder"
 )
 
-func (d *PostDeleter) CommonAssess(from string, account *postbar.Account, post postbar.IPost, tid uint64) postfinder.Control {
+func (d *PostDeleter) CommonAssess(from string, account *postbar.Account, post postbar.IPost, thread postbar.IThread) postfinder.Control {
 
 	_, uid := post.PGetAuthor().AGetID()
 	pid := post.PGetPid()
+	tid := thread.TGetTid()
 
 	if _, exist := d.Records.WaterThread_Tids[tid]; exist {
 		d.Logger.Debug(MakePrefix(nil, tid, pid, 0, uid), "水楼的贴子应该来不到这里,但是不知道为什么来了.")
@@ -47,26 +48,39 @@ func (d *PostDeleter) CommonAssess(from string, account *postbar.Account, post p
 		deleteReason = append(deleteReason, fmt.Sprint("用户名匹配关键词:", matchedExp))
 	}
 
+	var deleteReason_f string
+
 	if len(deleteReason) != 0 {
 		if len(deleteReason) == 1 {
-			d.DeletePost(from, account, tid, pid, 0, uid, deleteReason[0])
+			deleteReason_f = deleteReason[0]
 		} else {
-			d.DeletePost(from, account, tid, pid, 0, uid, fmt.Sprint(deleteReason))
-		}
-		if len(banReason) == 0 {
-			return postfinder.Finish
+			deleteReason_f = fmt.Sprint(deleteReason)
 		}
 	}
 
-	if len(banReason) != 0 {
-		if len(banReason) == 1 {
-			d.BanID(from, account.BDUSS, post.PGetAuthor().AGetName(),
-				d.ForumID, tid, pid, uid, 1, banReason[0], "null")
-		} else {
-			d.BanID(from, account.BDUSS, post.PGetAuthor().AGetName(),
-				d.ForumID, tid, pid, uid, 1, fmt.Sprint(banReason), "null")
-		}
-		return postfinder.Finish
+	//TODO: 如果uid为0且需要封禁,重新获取uid
+
+	ac, postTime := post.PGetPostTime()
+	var postTime_str string
+	if ac {
+		postTime_str = postTime.Format("2006-01-02 15:04:05")
+	} else {
+		postTime_str = postTime.Format("2006-01-02 15:04")
+	}
+
+	if len(deleteReason) != 0 {
+		d.DeletePost(from, account, &DeletePostRequest{
+			tid:      tid,
+			pid:      pid,
+			spid:     0,
+			uid:      uid,
+			title:    thread.TGetTitle(),
+			content:  post.PGetContentList(),
+			author:   post.PGetAuthor().AGetName(),
+			postTime: postTime_str,
+			reason:   deleteReason_f,
+			remark:   "",
+		}, len(banReason) != 0, "")
 	}
 
 	return postfinder.Continue

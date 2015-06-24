@@ -60,17 +60,17 @@ func Get(url string, parameters Parameters, cookies Cookies) ([]byte, error) {
 			return bs, nil
 		} else if RetryTimes < 0 {
 			if !ShutUp {
-				logs.Fatal("第", i+1, "次获取响应失败,无重试次数上限.", err.Error())
+				logs.Warn("第", i+1, "次获取响应失败,无重试次数上限.", err.Error())
 			}
 			i++
 		} else if i == RetryTimes {
 			if !ShutUp {
-				logs.Fatal("第", i+1, "次获取响应失败,到达重试次数上限.", err.Error())
+				logs.Warn("第", i+1, "次获取响应失败,到达重试次数上限.", err.Error())
 			}
 			return []byte(""), err
 		} else {
 			if !ShutUp {
-				logs.Fatal("第", i+1, "次获取响应失败,最多重试", RetryTimes, "次.ERROR:", err.Error())
+				logs.Warn("第", i+1, "次获取响应失败,最多重试", RetryTimes, "次.ERROR:", err.Error())
 			}
 			i++
 		}
@@ -105,17 +105,17 @@ func Post(url string, parameters Parameters) ([]byte, error) {
 			return bs, nil
 		} else if RetryTimes < 0 {
 			if !ShutUp {
-				logs.Fatal("第", i+1, "次获取响应失败,无重试次数上限.", err.Error())
+				logs.Warn("第", i+1, "次获取响应失败,无重试次数上限.", err.Error())
 			}
 			i++
 		} else if i == RetryTimes {
 			if !ShutUp {
-				logs.Fatal("第", i+1, "次获取响应失败,到达重试次数上限.", err.Error())
+				logs.Warn("第", i+1, "次获取响应失败,到达重试次数上限.", err.Error())
 			}
 			return []byte(""), err
 		} else {
 			if !ShutUp {
-				logs.Fatal("第", i+1, "次获取响应失败,最多重试", RetryTimes, "次.ERROR:", err.Error())
+				logs.Warn("第", i+1, "次获取响应失败,最多重试", RetryTimes, "次.ERROR:", err.Error())
 			}
 			i++
 		}
@@ -155,17 +155,17 @@ func PostAdv(url string, parameters Parameters, cookies Cookies, f func(*gohttp.
 			return bs, nil
 		} else if RetryTimes < 0 {
 			if !ShutUp {
-				logs.Fatal("第", i+1, "次获取响应失败,无重试次数上限.", err.Error())
+				logs.Warn("第", i+1, "次获取响应失败,无重试次数上限.", err.Error())
 			}
 			i++
 		} else if i == RetryTimes {
 			if !ShutUp {
-				logs.Fatal("第", i+1, "次获取响应失败,到达重试次数上限.", err.Error())
+				logs.Warn("第", i+1, "次获取响应失败,到达重试次数上限.", err.Error())
 			}
 			return []byte(""), err
 		} else {
 			if !ShutUp {
-				logs.Fatal("第", i+1, "次获取响应失败,最多重试", RetryTimes, "次.ERROR:", err.Error())
+				logs.Warn("第", i+1, "次获取响应失败,最多重试", RetryTimes, "次.ERROR:", err.Error())
 			}
 			i++
 		}
@@ -204,17 +204,17 @@ func GetAdv(url string, parameters Parameters, cookies Cookies, f func(*gohttp.R
 			return bs, nil
 		} else if RetryTimes < 0 {
 			if !ShutUp {
-				logs.Fatal("第", i+1, "次获取响应失败,无重试次数上限.", err.Error())
+				logs.Warn("第", i+1, "次获取响应失败,无重试次数上限.", err.Error())
 			}
 			i++
 		} else if i == RetryTimes {
 			if !ShutUp {
-				logs.Fatal("第", i+1, "次获取响应失败,到达重试次数上限.", err.Error())
+				logs.Warn("第", i+1, "次获取响应失败,到达重试次数上限.", err.Error())
 			}
 			return []byte(""), err
 		} else {
 			if !ShutUp {
-				logs.Fatal("第", i+1, "次获取响应失败,最多重试", RetryTimes, "次.ERROR:", err.Error())
+				logs.Warn("第", i+1, "次获取响应失败,最多重试", RetryTimes, "次.ERROR:", err.Error())
 			}
 			i++
 		}

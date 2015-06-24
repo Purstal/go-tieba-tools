@@ -45,12 +45,7 @@ type PostFinder struct {
 	}
 }
 
-func init() {
-	InitLoggers()
-	InitDebugger()
-}
-
-func NewPostFinder(accWin8, accAndr *postbar.Account, forumName string, yield func(*PostFinder), debug bool) (*PostFinder, error) {
+func NewPostFinder(accWin8, accAndr *postbar.Account, forumName string, yield func(*PostFinder), debug bool, logDir string) (*PostFinder, error) {
 	var postFinder PostFinder
 	postFinder.Debug.StartTime = time.Now()
 
@@ -58,17 +53,19 @@ func NewPostFinder(accWin8, accAndr *postbar.Account, forumName string, yield fu
 	postFinder.AccAndr = accAndr
 	postFinder.ForumName = forumName
 
+	initLoggers(&postFinder, logDir)
+
 	yield(&postFinder)
 	if postFinder.ThreadFilter == nil || postFinder.NewThreadFirstAssessor == nil ||
 		postFinder.NewThreadSecondAssessor == nil || postFinder.AdvSearchAssessor == nil ||
 		postFinder.PostAssessor == nil || postFinder.CommentAssessor == nil {
-		Logger.Fatal("删贴机初始化错误,有函数未设置:", postFinder, ".")
+		logger.Fatal("删贴机初始化错误,有函数未设置:", postFinder, ".")
 		panic("删贴机初始化错误,有函数未设置: " + fmt.Sprintln(postFinder) + ".")
 	}
 
 	fid, err, pberr := apis.GetFid(forumName)
 	if err != nil || pberr != nil {
-		Logger.Fatal("获取fid时出错: ", err, pberr)
+		logger.Fatal("获取fid时出错: ", err, pberr)
 		return nil, err
 	}
 	postFinder.Fid = fid
@@ -77,12 +74,8 @@ func NewPostFinder(accWin8, accAndr *postbar.Account, forumName string, yield fu
 		time.Second*10, time.Second*30, time.Minute, time.Minute*5, time.Minute*10,
 		time.Minute*30, time.Hour, time.Hour*3)
 
-	/*
-		postFinder.SearchTaskManager = NewSearchTaskManager(&postFinder, 0, time.Second,
-			time.Second*3, time.Second*3, time.Second*3)
-	*/
-
 	if debug {
+		InitDebugger()
 		postFinder.Debugger = NewDebugger(forumName, &postFinder, time.Second/4)
 	}
 
@@ -98,18 +91,15 @@ type ForumPageThread struct {
 
 func (finder *PostFinder) Run(monitorInterval time.Duration) {
 
-	//monitor.MakeForumPageThreadChan(acc, "minecraft")
 	var threadChan = make(chan ForumPageThread)
 	finder.FreshPostMonitor = monitor.NewFreshPostMonitor(finder.AccWin8, finder.ForumName, monitorInterval)
 
 	go func() {
 		for {
 			forumPage := <-finder.FreshPostMonitor.PageChan
-			//fmt.Println(len(forumPage.ThreadList))
 			if forumPage.Extra.ServerTime.After(finder.ServerTime) {
 				finder.ServerTime = forumPage.Extra.ServerTime
 			}
-			//fmt.Println("---", forumPage.Extra.ServerTime)
 			for _, thread := range forumPage.ThreadList {
 				threadChan <- ForumPageThread{
 					Forum:  forumPage.Forum,
@@ -126,12 +116,11 @@ func (finder *PostFinder) Run(monitorInterval time.Duration) {
 			if finder.SearchTaskManager.Debug.CurrentServerTime.Before(thread.Extra.ServerTime) {
 				finder.SearchTaskManager.Debug.CurrentServerTime = thread.Extra.ServerTime
 			}
-			if ctrl := finder.ThreadFilter(finder.AccWin8, &thread); ctrl == Continue { //true:不忽略
+			if ctrl := finder.ThreadFilter(finder.AccWin8, &thread); ctrl == Continue {
 				if IsNewThread(&thread.Thread) {
 					go finder.FindAndAnalyseNewThread(&thread)
 				} else {
 					go finder.FindAndAnalyseNewPost(&thread)
-
 				}
 			}
 		}

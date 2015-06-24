@@ -29,18 +29,16 @@ func (d *PostDeleter) NewThreadFirstAssessor(account *postbar.Account, thread *p
 	}
 
 	if deleteReason != "" {
-		d.DeleteThread("主页页面", account, thread.Thread.Tid, 0, thread.Thread.Author.ID, deleteReason)
-		if banFlag {
-			pid := GetPidFromTid(thread.Thread.Tid, d.AccWin8)
-			if pid == 0 {
-				d.Logger.Error(MakePrefix(nil, thread.Thread.Tid, pid, 0, thread.Thread.Author.ID),
-					"无法获取主题pid,无法进行封禁,将不进行封禁.")
-			} else {
-				d.BanID("主页页面", account.BDUSS, thread.Thread.Author.Name,
-					d.ForumID, thread.Thread.Tid, pid, thread.Thread.Author.ID, 1, deleteReason, "null")
 
-			}
-		}
+		d.DeleteThread("主页页面", account, &DeleteThreadRequest{
+			tid: thread.Thread.Tid, uid: thread.Thread.Author.ID, pid: 0,
+			title:    thread.Thread.Title,
+			content:  thread.Thread.TGetContentList(),
+			author:   thread.Thread.Author.Name,
+			reason:   deleteReason,
+			postTime: thread.Thread.LastReplyTime.Format("2006-01-02 15:04:05"),
+		}, banFlag, "")
+
 		return postfinder.Finish
 	}
 
@@ -48,7 +46,7 @@ func (d *PostDeleter) NewThreadFirstAssessor(account *postbar.Account, thread *p
 }
 
 func (d *PostDeleter) NewThreadSecondAssessor(account *postbar.Account, post *postfinder.ThreadPagePost) {
-	if d.CommonAssess("主题页面(新主题)", account, post.Post, post.Thread.Tid) == postfinder.Finish {
+	if d.CommonAssess("主题页面(新主题)", account, post.Post, post.Thread) == postfinder.Finish {
 		return
 	}
 }

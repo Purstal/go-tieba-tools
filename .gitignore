@@ -27,6 +27,7 @@ _*.go
 _testmain.go
 
 *.exe
+*.exe~
 *.test
 *.prof
 
