@@ -6,7 +6,7 @@ import (
 	"sort"
 	"time"
 
-	analyser "github.com/purstal/pbtools/tool-core/operation-analyser"
+	analyser "github.com/purstal/pbtools/tool-cores/operation-analyser"
 )
 
 func Analyse2(datas []analyser.DayData) {

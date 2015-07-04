@@ -4,7 +4,7 @@ import "net/http"
 import "bytes"
 import "io/ioutil"
 
-import "github.com/purstal/pbtools/tool-core/operation-analyser/old/log"
+import "github.com/purstal/pbtools/tool-cores/operation-analyser/old/log"
 
 //http://www.crifan.com/go_language_http_do_post_pass_post_data/
 

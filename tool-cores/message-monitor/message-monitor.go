@@ -7,7 +7,7 @@ import (
 	"github.com/purstal/pbtools/modules/logs"
 	"github.com/purstal/pbtools/modules/postbar"
 
-	"github.com/purstal/pbtools/tool-core/utils/action"
+	"github.com/purstal/pbtools/tool-cores/utils/action"
 
 	//"github.com/purstal/pbtools/modules/postbar/floor-andr-6.1.3"
 	//"github.com/purstal/pbtools/modules/postbar/thread-win8-1.5.0.0"

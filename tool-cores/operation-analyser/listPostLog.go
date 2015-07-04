@@ -12,7 +12,7 @@ import (
 
 	"github.com/purstal/pbtools/modules/http"
 	"github.com/purstal/pbtools/modules/misc"
-	//"github.com/purstal/pbtools/tool-core/operation-analyser/old/log"
+	//"github.com/purstal/pbtools/tool-cores/operation-analyser/old/log"
 )
 
 type OpType int

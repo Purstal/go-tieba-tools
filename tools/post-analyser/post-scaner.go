@@ -10,7 +10,7 @@ import (
 	"github.com/purstal/pbtools/modules/http"
 	"github.com/purstal/pbtools/modules/postbar"
 	"github.com/purstal/pbtools/modules/postbar/thread-win8-1.5.0.0"
-	"github.com/purstal/pbtools/tool-core/utils"
+	"github.com/purstal/pbtools/tool-cores/utils"
 )
 
 var acc = postbar.NewDefaultWindows8Account("")

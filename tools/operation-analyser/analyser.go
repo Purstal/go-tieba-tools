@@ -16,12 +16,12 @@ import (
 	"github.com/purstal/pbtools/modules/postbar/apis"
 
 	"github.com/purstal/pbtools/modules/logs"
-	oldlog "github.com/purstal/pbtools/tool-core/operation-analyser/old/log"
+	oldlog "github.com/purstal/pbtools/tool-cores/operation-analyser/old/log"
 
-	old "github.com/purstal/pbtools/tool-core/operation-analyser/old/caozuoliang"
-	"github.com/purstal/pbtools/tool-core/operation-analyser/old/inireader"
+	old "github.com/purstal/pbtools/tool-cores/operation-analyser/old/caozuoliang"
+	"github.com/purstal/pbtools/tool-cores/operation-analyser/old/inireader"
 
-	analyser "github.com/purstal/pbtools/tool-core/operation-analyser"
+	analyser "github.com/purstal/pbtools/tool-cores/operation-analyser"
 	myanalyse "github.com/purstal/pbtools/tools/operation-analyser/analyse"
 )
 

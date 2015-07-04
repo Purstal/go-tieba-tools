@@ -157,7 +157,12 @@ error_msg:%s
 		resultText += result + "\n\n"
 	}
 	//logs.Debug(resultText)
-	pushNote(token, now.Format("2006-01-02 贴吧签到结果"), resultText)
+	for i := 0; i < 10; i++ {
+		err := pushNote(token, now.Format("2006-01-02 贴吧签到结果"), resultText)
+		if err == nil {
+			break
+		}
+	}
 
 }
 
