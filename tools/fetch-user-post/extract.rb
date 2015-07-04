@@ -1,5 +1,7 @@
 require 'json'
 
+require './utils.rb'
+
 def main
 	obj = JSON.parse(File.read('a.result.json').force_encoding("utf-8"))
 	
@@ -15,7 +17,7 @@ def main
 				if !record['回复']
 					records[tid]['楼主'] = true
 				end
-				time = parseTime(record["时间"])
+				time = parse_time(record["时间"])
 				if records[tid]['最早时间'] > time
 					records[tid]['最早时间'] = time
 				end
@@ -25,7 +27,7 @@ def main
 			records[tid] = {
 				"标题" => record["标题"],
 				"tid" => tid,
-				"最早时间" => parseTime(record["时间"]),
+				"最早时间" => parse_time(record["时间"]),
 				"楼主" => !record["回复"]
 			}
 		end
@@ -41,14 +43,6 @@ def main
 		csv << ["标题","tid","最早时间","楼主"]
 		records.each {|tid,r| csv << [r["标题"],tid,r["最早时间"],r["楼主"]]}
 	end
-end
-
-def parseTime(str)
-	md = /(\d*)-(\d*)-(\d*) (\d*):(\d*)/.match(str)
-	year = md[1].to_i; month = md[2].to_i; day = md[3].to_i
-	hour = md[4].to_i; minute = md[5].to_i
-	
-	return Time.new(year, month, day, hour ,minute)
 end
 
 main()
