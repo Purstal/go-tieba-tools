@@ -60,7 +60,6 @@ func (pd *PostFinder) FindAndAnalyseNewThread(forumPageThread *ForumPageThread) 
 
 	var threadPage *ThreadPage = TryGettingThreadPageStruct2(pd.AccWin8, forumPageThread.Thread.Tid, false, 0, 1, 2, false, false, false)
 	if threadPage == nil {
-
 		return
 	}
 

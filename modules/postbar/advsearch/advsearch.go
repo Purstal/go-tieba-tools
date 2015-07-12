@@ -46,6 +46,7 @@ type AdvSearchResult struct {
 	IsReply  bool
 	Title    string
 	Content  string
+	Forum    string
 	PostTime time.Time
 	Author   AdvSearchAuthor
 }
@@ -96,13 +97,16 @@ func GetAdvSearchResultList(kw, un string, rn,
 	if err != nil {
 		return nil, err
 	}
-	resp = misc.FromGBK(resp)
 
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(resp))
 	if err != nil {
 		return nil, err
 	}
 
+	return ParseAdvSearchDocument(doc), nil
+}
+
+func ParseAdvSearchDocument(doc *goquery.Document) []AdvSearchResult {
 	posts := doc.Find(`div.s_post_list`).Eq(0).Find(`div.s_post`)
 	results := make([]AdvSearchResult, posts.Length())
 	posts.Each(func(index int, post *goquery.Selection) {
@@ -110,7 +114,7 @@ func GetAdvSearchResultList(kw, un string, rn,
 		bluelink := post.Find(`a.bluelink`)
 		title := bluelink.Text()
 		oldLen := len(title)
-		result.Title = strings.TrimPrefix(title, `回复：`)
+		result.Title = strings.TrimPrefix(misc.FromGBK(title), `回复：`)
 		result.IsReply = oldLen != len(result.Title)
 		link, _ := bluelink.Attr(`href`)
 
@@ -124,25 +128,29 @@ func GetAdvSearchResultList(kw, un string, rn,
 			result.Tid, _ = strconv.ParseUint(ids[1], 10, 64)
 			result.Pid, _ = strconv.ParseUint(ids[2], 10, 64)
 
-			result.Content = post.Find(`div.p_content`).Text()
+			result.Content = misc.FromGBK(post.Find(`div.p_content`).Text())
 
-			date := post.Find(`font.p_date`).Text()
+			date := misc.FromGBK(post.Find(`font.p_date`).Text())
 			var y, m, d, hour, min int
 			fmt.Sscanf(date, "%d-%d-%d %d:%d", &y, &m, &d, &hour, &min)
 			result.PostTime = time.Date(y, time.Month(m), d, hour, min, 0, 0, time.Local)
 
-			result.Author.Name = un
+			x := post.Find(`font.p_violet`)
+			result.Forum = misc.FromGBK(x.First().Text())
+			result.Author.Name = misc.FromGBK(x.Next().Text())
+
 		}
 
 	CONTINUE:
 	})
 
-	return results, nil
+	return results
 }
 
 var advreg = regexp.MustCompile(`<span class="p_title"><a class="bluelink" href="/p/(.*?)\?pid=(.*?)&.*?>(回复：)?(.*?)</a>.*?"p_content">(.*?)</div>.*?p_date">(.*?)<`)
 var idreg = regexp.MustCompile(`/p/(\d+).*?pid=(\d+)`)
 
+//没有Forum
 func OldGetAdvSearchResultList(kw, un string, rn,
 	pn int) ([]AdvSearchResult, error) {
 	resp, err := GetAdvSearchResultPage(kw, un, rn, pn)
