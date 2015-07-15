@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="http://mrcoles.com/media/test/markdown-css/markdown.css" type="text/css" />
+	<span id="page-id" content="a" />
+</head>
+<body>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script>
+
+function moveTo(where, whom) {
+	$("#"+where.id).append(whom);
+	$("#"+whom.id).find("button").each(function() { /*console.log(this);*/ this.style.display = ""; })
+	if (where === undetermined) {
+		//console.log($("#"+whom.id).find("button.undetermined_button"))
+		$("#"+whom.id).find("button.undetermined_button").attr("style", "display : none");
+	} else if (where === passed) {
+		$("#"+whom.id).find("button.passed_button").attr("style", "display : none");
+	} else if (where === not_passed) {
+		$("#"+whom.id).find("button.not_passed_button").attr("style", "display : none");
+	}
+}
+
+function collectData(whom) {
+	var data = []
+	$("ul#"+whom).find("span.thread").each(function(i) { data[i] = this.id })
+	return data
+}
+
+var baseName = "ivory-tower>>"+$("span#page-id").attr("content")
+
+function saveData() {
+	localStorage[baseName] = JSON.stringify({
+		"unchecked" : collectData("unchecked"),
+		"undetermined" : collectData("undetermined"),
+		"passed" : collectData("passed"),
+		"not_passed" : collectData("not_passed"),
+	})
+
+	$("font#msg").attr("style", "display:inline")
+	document.getElementById("msg").innerText = "保存完毕"
+}
+
+function loadData() {
+	var where_ids = ["unchecked","undetermined","passed","not_passed"]
+	var data = JSON.parse(localStorage[baseName])
+	for (var i = 0; i < where_ids.length ; i++) {
+		var where = document.getElementById(where_ids[i])
+		var ids = data[where_ids[i]]
+		for (var j = 0; j < ids.length; j++ ) {
+			moveTo(where, document.getElementById(ids[j]))
+		}
+	}
+	$("font#msg").attr("style", "display:inline")
+	document.getElementById("msg").innerText = "读取完毕"
+}
+
+/* 但其实不是重置..干脆去掉算了..
+function resetAllData() {
+	if (!reset_button.confirm) {
+		reset_button.confirm = true
+		reset_button.innerText = "点击确认重置!"
+		$("font#msg").attr("style", "display:inline")
+		document.getElementById("msg").innerText = "确认重置请再按一次"
+	} else {
+		reset_button.confirm = false
+		reset_button.innerText = "重置"
+		
+		var where_ids = ["undetermined","passed","not_passed"]
+		for (var i = 0; i < where_ids.length ; i++) {
+			resetData(where_ids[i])
+		}
+		$("font#msg").attr("style", "display:inline")
+		document.getElementById("msg").innerText = "重置完毕"
+	}
+}
+
+function resetData(where_id) {
+	$("ul#"+where_id).find("span.thread").each(function(){
+		moveTo(unchecked, this)
+	})
+}
+*/
+
+</script>
+
+<h1>从 2006-01-02 15:04:05 至 2006-01-02 15:04:05</h1>
+
+<button onclick="loadData()">读取</button>
+<button onclick="saveData()">保存</button>
+<!--<button onclick="resetAllData()" id="reset_button">重置</button>-->
+
+<font id="msg" style="display:none"></font>
+
+<h1>未检查</h1>
+<ul id="unchecked">
+	<span id="t3892396753" class="thread">
+		<li>
+			<h2>作为一名走水路的一名军人，我决定我们水路军进击钓鱼岛坐等小日本</h2>
+			<button onclick="moveTo(undetermined, t3892396753)" class="undetermined_button">待定</button>
+			<button onclick="moveTo(passed, t3892396753)" class="passed_button">通过</button>
+			<button onclick="moveTo(not_passed, t3892396753)" class="not_passed_button">不通过</button>
+			<ul>
+				<li>作者: 我爸名字叫上帝</li>
+				<li>tid: <a href="http:tieba.baidu.com/p/3892396753" target="_Blank">3892396753</a></li>
+				<li>时间:2015/7/14 1:46</li>
+				<li>摘要:<ul>
+					<li>文字: 动我一片净土，虽远必诛，老子也是有血性的大天朝男儿， 已城管之名召唤大天朝城管战神(๑• . •๑) ; </li>
+					<li>图片: <img src="http://imgsrc.baidu.com/forum/pic/item/4ba04981800a19d88bf1753c35fa828ba61e463c.jpg" 
+						width=240 height=160></img>(原大小: 440 x 440)</li>
+				</ul></li>
+			</ul>
+		</li>
+	</span>
+</ul>
+
+<h1>待定</h1>
+<ul id="undetermined">
+</ul>
+
+<h1>通过</h1>
+<ul id="passed">
+</ul>
+
+<h1>不通过</h1>
+<ul id="not_passed">
+</ul>
+
+</body>

@@ -27,10 +27,10 @@ type Thread struct {
 	//Original interface{}
 }
 
-func GetThread2(acc *postbar.Account, tid uint64, mark bool, pid uint64, pn, rn int,
+func GetThread2(accWin8 *postbar.Account, tid uint64, mark bool, pid uint64, pn, rn int,
 	withFloor, seeLz, r bool) (*Thread, error, *postbar.PbError) {
 
-	_thread, err, pberr := GetOriginalThreadStruct(acc, tid, mark, pid, pn, rn, withFloor, seeLz, r)
+	_thread, err, pberr := GetOriginalThreadStruct(accWin8, tid, mark, pid, pn, rn, withFloor, seeLz, r)
 
 	if err != nil {
 		return nil, err, nil

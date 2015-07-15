@@ -8,10 +8,10 @@ import (
 )
 
 func GetForumStruct(
-	acc *postbar.Account, kw string, rn,
+	accWin8 *postbar.Account, kw string, rn,
 	pn int) (*ForumPage, []*ForumPageThread, *ForumPageExtra, error, *postbar.PbError) {
 
-	ofp, err, pberr := GetOriginalForumStruct(acc, kw, rn, pn)
+	ofp, err, pberr := GetOriginalForumStruct(accWin8, kw, rn, pn)
 
 	if err != nil {
 		return nil, nil, nil, err, nil

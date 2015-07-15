@@ -1,1 +1,3 @@
-save_path = "./root"
+save_path = "./root/"
+temp_file_name = ".temp"
+forum = "minecraft"
