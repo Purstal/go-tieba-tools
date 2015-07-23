@@ -41,7 +41,7 @@ type ForumPageThread struct {
 
 	LastReplyTime time.Time
 
-	IsTop, IsGood bool
+	IsTop, IsGood, IsLivePost bool
 
 	Author      ForumPageThreadAuthor
 	LastReplyer ForumPageThreadRelpyer

@@ -28,8 +28,9 @@ type OriginalForumStruct struct {
 		ReplyNum    uint32 `json:"reply_num,string"`
 		LastTimeInt int64  `json:"last_time_int,string"`
 
-		IsTop  int `json:"is_top,string"`
-		IsGood int `json:"is_good,string"`
+		IsTop      int `json:"is_top,string"`
+		IsGood     int `json:"is_good,string"`
+		IsLivePost int `json:"is_livepost,string"`
 
 		Author struct {
 			ID       uint64 `json:"id,string"`

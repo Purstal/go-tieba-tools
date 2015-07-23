@@ -3,17 +3,14 @@ package main
 import (
 	"fmt"
 	"os"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/purstal/pbtools/modules/logs"
 	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/apis/forum-win8-1.5.0.0"
 	"github.com/purstal/pbtools/modules/postbar/apis/thread-win8-1.5.0.0"
 	"github.com/purstal/pbtools/tools/ivory-tower/collector/collects"
-	"github.com/purstal/pbtools/tools/ivory-tower/collector/records/save-to-html"
 	"github.com/purstal/pbtools/tools/operation-analyser/csv"
 )
 
@@ -35,113 +32,70 @@ func main() {
 		return
 	}
 
-	if flags.FromTime == nil {
-		flags.FromTime = &begin
+	if flags.BeginTime == nil {
+		flags.BeginTime = &begin
 	}
 
 	var accWin8 = postbar.NewDefaultWindows8Account("")
 
 	logs.Info("收集贴子.")
-	var records = Collect(accWin8, flags.ForumName, flags.ToTime).ToReversedSortedSlice()
+	//var records = Collect(accWin8, flags.ForumName, flags.EndTime).ToReversedSortedSlice()
+	var threads = collects.Collect(accWin8, flags.ForumName, flags.EndTime).ToSortedSlice()
 	logs.Info("收集完毕.")
 
-	{
-		logs.Info("验证是否新主题.")
-		var n = len(records)
-		for i, record := range records {
-			logs.Info(fmt.Sprintf("第%d个主题,最多%d个主题.主题tid:%d.", i, n, record.Tid))
-			var postTime = GetPostTime(TryGettingThread(accWin8, record.Tid, 2, 1))
-			if postTime == nil {
-				continue
-			}
-			records[i].PostTime = postTime.Unix()
-			if postTime.Before(flags.ToTime) || record.Tid <= flags.MinTid {
-				records = records[:i]
-				break
-			}
+	logs.Info("总共收集到贴子:", len(threads))
+
+	logs.Info("验证是否新主题.")
+	var cutOffs []int64
+	var endUnix = flags.EndTime.Unix()
+	var beginUnix int64
+	if flags.BeginTime != nil {
+		beginUnix = flags.BeginTime.Unix()
+	} else {
+		beginUnix = begin.Unix()
+	}
+	for i := endUnix; i < beginUnix; i += 24 * 60 * 60 {
+		cutOffs = append(cutOffs, i)
+	}
+	result := collects.Validate(accWin8, threads, cutOffs)
+	logs.Info("验证完毕.")
+
+	for i := 0; i < len(result); i++ {
+		var date = time.Unix(cutOffs[i-1], 0).Format("2006-01-02")
+		for j := 0; j < len(result[i]); j++ {
+			result[i][j].Time = date
 		}
-		logs.Info("验证完毕.")
 	}
 
 	logs.Info("记录数据.")
 
 	os.Mkdir("新主题", 0644)
+
 	if flags.OutputFormat.CSV {
-		if err := SaveRecords("./新主题/", records, begin, flags.ToTime); err != nil {
-			logs.Info("csv记录失败:", err)
-		} else {
-			logs.Info("csv记录完毕.")
-		}
-	}
-
-	if flags.OutputFormat.HTML {
-		var xRecords = make([]save_to_html.Record, len(records))
-		for i, record := range records {
-			xRecords[i] = save_to_html.Record{
-				Tid:      record.Tid,
-				Title:    record.Title,
-				Author:   record.Author,
-				Time:     time.Unix(record.PostTime, 0).Format("2006-01-02 15:04:05"),
-				Abstract: save_to_html.ExtractAbstract(record.Abstract),
-			}
-		}
-		const TIME_LAYOUT = "2006年01月02日15点04分05秒"
-		const DATE_LAYOUT = "2006年01月02日"
-		if flags.Merge {
-			var timeStr = fmt.Sprintf("%s 至 %s", begin.Format(TIME_LAYOUT), flags.ToTime.Format(TIME_LAYOUT))
-			f, err := os.Create("./新主题/" + timeStr + ".html")
-			if err != nil {
-				logs.Info("html记录失败:", err)
+		for i, threads := range result[1:] {
+			var rangeStr string
+			if i == len(threads)-1 {
+				rangeStr = begin.Format("2006年01月02日 至 15时04分05秒")
 			} else {
-				save_to_html.Write(f, xRecords, timeStr)
-				logs.Info("html记录完毕.")
-				f.Close()
+				rangeStr = time.Unix(cutOffs[i], 0).Format("2006年01月02日")
 			}
-		} else {
-			var i int
-			var n = len(records)
-			for day := flags.ToTime.Unix(); i < n; day += 24 * 60 * 60 {
-				var boundary = day + 24*60*60
-				var f *os.File
-				var err error
-				var timeStr string
-				if boundary < begin.Unix() {
-					timeStr = fmt.Sprintf("%s", time.Unix(day, 0).Format(DATE_LAYOUT))
-					f, err = os.Create("./新主题/" + timeStr + ".html")
-				} else {
-					timeStr = fmt.Sprintf("%s 截至 %s", time.Unix(day, 0).Format(DATE_LAYOUT), begin.Format("15点04分05秒"))
-					f, err = os.Create("./新主题/" + timeStr + ".html")
-				}
-				var j int
-				var breakFlag bool
-				for ; j < n && records[j].PostTime < boundary; j++ {
-					if records[j].PostTime > flags.ToTime.Unix() {
-						breakFlag = true
-					}
-				}
-				if err != nil {
-					logs.Info("html记录失败:", err)
-				} else {
-					save_to_html.Write(f, xRecords[i:j], timeStr)
-					logs.Info("html记录完毕.")
-					f.Close()
-				}
-				if breakFlag {
-					break
-				}
+			if err := SaveRecords("./新主题/", threads, rangeStr); err != nil {
+				logs.Info(fmt.Sprintf("%s csv记录失败: %s.", err.Error()))
+			} else {
+				logs.Info(fmt.Sprintf("%s csv记录成功."))
 			}
 		}
-
 	}
 
+	logs.Info("记录完毕.")
 	logs.Info("消耗时间:", time.Now().Sub(begin))
 
 }
 
 type Flags struct {
 	ForumName string
-	ToTime    time.Time  //必选
-	FromTime  *time.Time //可选
+	EndTime   time.Time  //必选
+	BeginTime *time.Time //可选
 	MinTid    uint64
 	Merge     bool
 
@@ -156,17 +110,17 @@ func parseFlag() *Flags {
 			CSV, HTML, JSON bool
 		}{CSV: true, HTML: true},
 	}
-	if len(os.Args) == 2 {
+	if len(os.Args) <= 2 {
 		return nil
 	}
 	flags.ForumName = os.Args[1]
 	logs.Info("贴吧:", os.Args[1])
-	var toTime, err1 = parseTime(os.Args[2])
+	var EndTime, err1 = parseTime(os.Args[2])
 	if err1 != nil {
 		logs.Fatal(fmt.Sprintf("截止日期格式有误: %s.", err1.Error()))
 		return nil
 	}
-	flags.ToTime = toTime
+	flags.EndTime = EndTime
 
 	logs.Info("截止日期:", os.Args[2])
 
@@ -188,12 +142,12 @@ func parseFlag() *Flags {
 	for _, arg := range os.Args[3:] {
 		if strings.HasPrefix(arg, "--from-time=") {
 			v := strings.TrimPrefix(arg, "--from-time=")
-			if fromTime, err := parseTime(v); err != nil {
+			if BeginTime, err := parseTime(v); err != nil {
 				logs.Fatal(fmt.Sprintf("起始日期格式有误: %s.", err1.Error()))
 				return nil
 			} else {
-				flags.FromTime = &fromTime
-				logs.Info("设置起始日期:", fromTime.Format("2006-01-02 15:04:05"))
+				flags.BeginTime = &BeginTime
+				logs.Info("设置起始日期:", BeginTime.Format("2006-01-02 15:04:05"))
 			}
 		} else if strings.HasPrefix(arg, "--min-tid=") {
 			v := strings.TrimPrefix(arg, "--min-tid=")
@@ -230,13 +184,14 @@ func printUsage() {
 `, os.Args[0], os.Args[0], os.Args[0])
 }
 
-func Collect(accWin8 *postbar.Account, forumName string, to time.Time) ThreadMap {
+/*
+func Collect(accWin8 *postbar.Account, forumName string, to time.Time) collects.ThreadMap {
 	var set = ThreadMap{} //见下面
 	collect(accWin8, forumName, to, set)
 	return set
 }
 
-func collect(accWin8 *postbar.Account, forumName string, to time.Time, set ThreadMap) {
+func collect(accWin8 *postbar.Account, forumName string, to time.Time, set collects.ThreadMap) {
 	logs.Debug("本轮收集至:", to.String())
 	const RN = 100
 	var lastTime time.Time
@@ -261,101 +216,24 @@ func collect(accWin8 *postbar.Account, forumName string, to time.Time, set Threa
 				return
 			}
 			if _, exist := set[theThread.Tid]; !exist {
-				set[theThread.Tid] = collects.ThreadRecord{
+				set[theThread.Tid] = collects.Thread{
 					Title:    theThread.Title,
 					Tid:      theThread.Tid,
 					Author:   theThread.Author.Name,
-					Abstract: append(theThread.Abstract, theThread.MediaList...), /*extractAbstract(append(theThread.Abstract, theThread.MediaList...))*/
+					Abstract: append(theThread.Abstract, theThread.MediaList...),
 				}
 			}
 		}
 	}
 	logs.Debug("结束本轮收集.")
 }
+*/
 
 func GetPostTime(theThread *thread.Thread) *time.Time {
 	if theThread == nil {
 		return nil
 	}
 	return &theThread.PostList[0].PostTime
-}
-
-func TryGettingThread(accWin8 *postbar.Account, tid uint64, rn, pn int) *thread.Thread {
-	for {
-		t, err, pberr := thread.GetThread2(accWin8, tid, false, 0, pn, rn, false, false, false)
-		if err == nil {
-			if pberr == nil || pberr.ErrorCode == 0 {
-				if len(t.PostList) != 0 {
-					return t
-				}
-				logs.Error(fmt.Sprintf("无法获取主题回复,重试."), pn, pberr.ErrorCode, pberr.ErrorMsg)
-			} else if pberr.ErrorCode == 4 {
-				logs.Error(fmt.Sprintf("主题已被删除,跳过. tid:%d; pn:%d; pberror:%d(%s).", tid, pn, pberr.ErrorCode, pberr.ErrorMsg))
-				return nil
-			} else {
-				logs.Error(fmt.Sprintf("无法获取主题,重试. tid:%d; pn:%d; pberror:%d(%s).", tid, pn, pberr.ErrorCode, pberr.ErrorMsg))
-			}
-		} else {
-			logs.Error(fmt.Sprintf("无法获取主题,重试. tid:%d; pn:%d; error:%s", tid, pn, err.Error()))
-		}
-	}
-}
-
-func TryGettingForumPageThreads(accWin8 *postbar.Account, forumName string, rn, pn int) []*forum.ForumPageThread {
-	var retryTimes int
-	const MAX_RETRY_TIME = 2
-	for {
-		_, posts, _, err, pberr := forum.GetForumStruct(accWin8, forumName, rn, pn)
-		if err == nil {
-			if pberr == nil || pberr.ErrorCode == 0 {
-				if len(posts) != rn {
-					if rn < len(posts) {
-						logs.Warn(fmt.Sprintf("本页所求rn:%d, 实际rn:%d", rn, len(posts)))
-						return posts
-					}
-					if retryTimes < MAX_RETRY_TIME {
-						retryTimes++
-					} else {
-						logs.Warn(fmt.Sprintf("经%d次尝试, 本页所求rn:%d, 实际rn:%d", MAX_RETRY_TIME+1, rn, len(posts)))
-						return posts
-					}
-				} else {
-					return posts
-				}
-			} else {
-				logs.Error(fmt.Sprintf("无法获取主页,重试. pn:%d; pberror:%d(%s).", pn, pberr.ErrorCode, pberr.ErrorMsg))
-			}
-		} else {
-			logs.Error(fmt.Sprintf("无法获取主页,重试. pn:%d; error:%s", pn, err.Error()))
-		}
-	}
-}
-
-type ThreadMap map[uint64]collects.ThreadRecord
-
-func (set ThreadMap) ToReversedSortedSlice() []collects.ThreadRecord {
-	var slice = make([]collects.ThreadRecord, len(set))
-	var i = 0
-	for _, v := range set {
-		slice[i] = v
-		i++
-	}
-	sort.Sort(sort.Reverse(ThreadSliceSorter(slice)))
-	return slice
-}
-
-type ThreadSliceSorter []collects.ThreadRecord
-
-func (s ThreadSliceSorter) Less(i, j int) bool {
-	return s[i].Tid < s[j].Tid
-}
-
-func (s ThreadSliceSorter) Swap(i, j int) {
-	s[i], s[j] = s[j], s[i]
-}
-
-func (s ThreadSliceSorter) Len() int {
-	return len(s)
 }
 
 func parseTime(str string) (time.Time, error) { //time.Parse的location不对
@@ -428,21 +306,21 @@ func extractAbstract(contents []interface{}) string {
 }
 
 //从 `../recorder/recorder.go` 复制来并稍作修改
-func SaveRecords(path string, records []collects.ThreadRecord, from, to time.Time) error {
+func SaveRecords(path string, records []collects.Thread, rangeStr string) error {
 	const TIME_FORMAT_LAYOUT = "2006年01月02日15点04分05秒"
-	f, err := os.Create(path + fmt.Sprintf("%s 至 %s.csv", from.Format(TIME_FORMAT_LAYOUT), to.Format(TIME_FORMAT_LAYOUT)))
+	f, err := os.Create(path + fmt.Sprintf("%s.csv", rangeStr))
 	f.Write([]byte{0xEF, 0xBB, 0xBF})
 	if err != nil {
 		return err
 	}
 	w := csv.NewWriter(f)
 
-	w.Write([]string{fmt.Sprintf("收集时间: %s => %s", from, to)})
+	w.Write([]string{fmt.Sprintf("收集时间: %s", rangeStr)})
 	w.Write(nil)
 
 	for _, r := range records {
 		w.WriteAll([][]string{[]string{fmt.Sprintf("tid: %d", r.Tid), fmt.Sprintf("作者: %s", r.Author),
-			fmt.Sprintf("标题: %s", r.Title)}, []string{fmt.Sprintf("时间: %s", time.Unix(r.PostTime, 0).Format("2006-01-02 15:04:05")), extractAbstract(r.Abstract)}, nil})
+			fmt.Sprintf("标题: %s", r.Title)}, []string{fmt.Sprintf("时间: %s", r.Time), extractAbstract(r.Abstract)}, nil})
 	}
 	w.Flush()
 	f.Close()

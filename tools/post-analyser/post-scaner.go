@@ -160,7 +160,7 @@ func ScanPost(tid uint64, fromPn, toPn int, fromTime time.Time, postListLastPage
 	var postLists = make([][]thread.ThreadPagePost, totalPn)
 	postLists[len(postLists)-1] = postListLastPage
 
-	manager := utils.NewThreadManager(realThreadNumber, totalPn)
+	manager := utils.NewLimitTaskManager(realThreadNumber, totalPn)
 	var lastLineCount int
 	for i := 0; i < toPn-fromPn+1; i++ {
 		manager.RequireChan <- true

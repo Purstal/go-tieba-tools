@@ -58,9 +58,10 @@ type ThreadPage struct {
 	ForumPageThread *forum.ForumPageThread
 	//HasForumPageThread bool
 	postbar.IThread
-	Tid    uint64
-	Title  string
-	Author ThreadPageAuthorAndThreadPagePostAuthor
+	Tid        uint64
+	Title      string
+	Author     ThreadPageAuthorAndThreadPagePostAuthor
+	CreateTime time.Time
 }
 
 func (t ThreadPage) TGetTid() uint64   { return t.Tid }

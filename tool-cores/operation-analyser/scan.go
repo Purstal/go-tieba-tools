@@ -153,7 +153,7 @@ func scanOneDay(BDUSS, forumName string, fromTime, toTime int64, maxThreadNumber
 
 	if totalPage > 2 {
 
-		tm := utils.NewThreadManager(maxThreadNumber, totalPage-2)
+		tm := utils.NewLimitTaskManager(maxThreadNumber, totalPage-2)
 
 		//go func() {
 		for i := 1; i < totalPage-1; i++ { //第一页最后一页单算

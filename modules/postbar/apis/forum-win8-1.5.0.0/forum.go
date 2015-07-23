@@ -39,7 +39,8 @@ func GetForumStruct(
 		t.ReplyNum = ot.ReplyNum
 
 		t.LastReplyTime = time.Unix(ot.LastTimeInt, 0)
-		t.IsTop, t.IsGood = ot.IsTop == 1, ot.IsGood == 1
+		t.IsTop, t.IsGood, t.IsLivePost =
+			ot.IsTop == 1, ot.IsGood == 1, ot.IsLivePost == 1
 
 		t.Author.Name = ot.Author.Name
 		t.Author.ID = ot.Author.ID

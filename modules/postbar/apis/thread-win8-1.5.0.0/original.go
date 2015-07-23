@@ -36,7 +36,7 @@ type OriginalThreadStruct struct {
 
 	Thread struct {
 		ID         uint64 `json:"id,string"`
-		CreateTime uint64 `json:"create_time,string"`
+		CreateTime int64  `json:"create_time,string"`
 		Title      string `json:"title"`
 		Author     struct {
 			ID       uint64 `json:"id,string"`

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="UTF-8">
+	
+	<!--做完网页第二天整个硬盘坏了, 只剩下很久之前版本的感觉, 懂吗!!!-->
+	<!--重新又写了一遍网页TAT-->
+	<!--作者: 贴吧 @iamunknown, Github @purstal-->
+	<!--我的心…好累…-->
+	<!--虽然幸亏在硬盘坏了之前把.min.js都整合并传到github上了, 然而并没有好多少…-->
+	
+	<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+	
+	<script src="http://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+	<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<script src="http://cdn.bootcss.com/handlebars.js/3.0.3/handlebars.min.js"></script>
+
+	<script src="http://purstal.github.io/ivory-tower/js/data-process.min.js"></script>
+	<script src="http://purstal.github.io/ivory-tower/js/init.min.js"></script>
+
+	<!--
+	<script src="data-process.min.fmt.js"></script>
+	<script src="init.min.fmt.js"></script>	
+	-->
+	
+	<script id="meta-data">
+		var meta_data = {
+			Categorys : [
+				{
+					Name : "未分类",
+					Class : "unclassified"
+				},				{
+					Name : "红石",
+					Class : "redstone"
+				},{
+					Name : "建筑",
+					Class : "structure"
+				},{
+					Name : "其他",
+					Class : "other"
+				},
+			]
+		}
+	</script>
+	<script id="option-template" type="text/x-handlebars-template">
+		<option value={{Value}}>{{Name}}</option>
+	</script>
+	<script id="abstract-template" type="text/x-handlebars-template">
+		<li>{{Type}}: {{{Content}}}</li>{{!--图片\把这里覆盖了, 不过恰到好处... 所以就不改了--}}
+	</script>
+	<script id="category-template" type="text/x-handlebars-template">
+		<h2 id="header-of-{{ID}}">{{Category}}</h2>
+		<ul id="{{ID}}" class="thread-list {{Class}}"></ul>
+	</script>
+	<script id="thread-template" type="text/x-handlebars-template">
+		<span id={{ID}} class="thread">
+			<li>
+				<h2>{{Title}}</h2>
+				<select class="destination-selector">{{{SelectHTML}}}</select>
+				<button onclick="moveThreadTo(undetermined, {{ID}})" class="btn btn-sm btn-info">待定</button>
+				<button onclick="moveThreadTo(passed, {{ID}})" class="btn btn-sm btn-success">通过</button>
+				<span class="unpassed-button">||
+				<button onclick="moveThreadTo(unpassed, {{ID}})" class="btn btn-sm btn-danger">不通过</button>
+				</span>
+				<ul>
+					<li>作者: {{Author}}</li>
+					<li>tid: <a href="http:tieba.baidu.com/p/{{Tid}}" target="_Blank">{{Tid}}</a></li>
+					<li>时间: {{Time}}</li>
+					<li>摘要:<ul>
+						{{{Abstract}}}
+					</ul></li>
+				</ul>
+			</li>
+		</span>		
+	</script>
+	
+	<style>
+		.abstract-image { height : 200px }
+	</style>
+
+</head>
+
+	
+
+
+<body onload="init(source_data ,meta_data)">
+	<font id="msg" style="display:none"></font>
+	
+	<div id="ivory-tower-header">
+		<div class="container">
+			<h1 id="heading"><b>象牙塔计划</b></h1>
+			<p id="subheading">正在加载啦…</p>
+			页面id: <span id="page-id-p"></span>
+		</div>
+	</div>
+	<style>
+		#ivory-tower-header {
+			padding-top: 60px;
+			padding-bottom: 60px;
+			margin-bottom: 40px;
+			font-family: 宋体;
+			background-color: #99CC00;
+		}
+		#heading {
+			color: #CCFFCC;
+			font-size: 60px;
+		}
+		#subheading {
+			color: #CCFF99;
+			font-size: 24px;
+		}
+		
+		#working-table {
+			font-family: "Arial", "Microsoft YaHei", "宋体", sans-serif;
+		}
+	</style>
+	
+	<div class="container">
+		<h1>本地存储
+		<button onclick="saveLocalData()" class="btn btn-sm btn-default">SAVE</button>
+		<button onclick="loadLocalData()" class="btn btn-sm btn-default">LOAD</button>
+		<font size="3" id="local-storage-message"></font>
+		</h1>
+		<hr/>
+		<h1>字符串存储
+		<font size="3" id="text-storage-message"></font>
+		</h1>
+		<button onclick="getJsonData(get_json_area)" class="btn btn-sm btn-default">GET</button>
+		<button onclick="setJsonData(set_json_area)" class="btn btn-sm btn-default">SET</button>
+		<input id="set_json_area" type="text"></input>
+		<div id="get_json_area" class="well" hidden></div>
+		<hr/>
+		<div class="row">
+			<div id="working-table" class="col-md-9">
+				
+				<h1 id="header-of-unchecked" class="page-header"><b>未检查</b></h1>
+				<ul id="unchecked" class="thread-list"></ul>
+				
+				<h1 class="page-header"><b>待定</b></h1>
+				<span id="undetermined" class="has-category"></span>
+				
+				<h1 class="page-header"><b>通过</b></h1>
+				<span id="passed" class="has-category"></span>
+				
+				<h1 id="header-of-unpassed" class="page-header"><b>不通过</b></h1>
+				<ul id="unpassed" class="thread-list"></ul>
+			</div>
+		</div>
+	</div>
+	
+	<script id="source-data" src="source-data.js"></script>
+
+</body>
+

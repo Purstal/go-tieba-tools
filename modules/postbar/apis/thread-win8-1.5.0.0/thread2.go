@@ -82,6 +82,7 @@ func GetThread2(accWin8 *postbar.Account, tid uint64, mark bool, pid uint64, pn,
 	thread.Thread.Author.IsLike = _thread.Thread.Author.IsLike == 1
 	thread.Thread.Author.Level = _thread.Thread.Author.LevelID
 	thread.Thread.Author.Portrait = _thread.Thread.Author.Portrait
+	thread.Thread.CreateTime = time.Unix(_thread.Thread.CreateTime, 0)
 
 	thread.Time = time.Unix(_thread.Time, 0)
 
