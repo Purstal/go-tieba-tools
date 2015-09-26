@@ -26,9 +26,9 @@ https://github.com/Purstal/go-tieba-base/tree/master/tieba/apis
 可以按照自己的需求修改
 ####核心部分:####
 * 首页监控:
-https://github.com/Purstal/pbtools/tree/master/tool-cores/forum-page-monitor
+https://github.com/Purstal/pbtools/tree/master/modules/forum-page-monitor
 * 贴子查找:
-https://github.com/Purstal/pbtools/tree/master/tool-cores/post-finder
+https://github.com/Purstal/pbtools/tree/master/modules/post-finder
 
 ####简单的本体:####
 V ?.?
@@ -44,7 +44,7 @@ V 1.7
 本来我是想把这个放到另一个repository的,但是懒得去了..其实接下来的打算是弄`operation-analyser analyse --pbfile=minecraft.toml lastyear range[2015-4-1,yesterday] 2015-2`类似的东西的,但因为这个项目优先级不高,就先(?)不填了..
 
 ####核心部分:####
-https://github.com/Purstal/pbtools/tree/master/tool-cores/operation-analyser
+https://github.com/Purstal/pbtools/tree/master/modules/operation-analyser
 ####本体:####
 https://github.com/Purstal/pbtools/tree/master/tools/operation-analyser
 
