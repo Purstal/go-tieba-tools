@@ -6,8 +6,8 @@
 个人有关百度贴吧的一些工具,比如用来监控贴吧<br/>
 因为算是自己第一个能拿的出手(?)的东西,所以肯定有许多不足,请见谅.<br/>
 
-把基础部分的东西转移到了:https://github.com/Purstal/go-tieba-base <br/>
-这里的东西也会逐渐拆分到各个小repo里.
+* 基础部分(go-tieba-base):https://github.com/Purstal/go-tieba-base <br/>
+* 供工具/软件使用的模块(go-tieba-modules):https://github.com/Purstal/go-tieba-modules <br/>
 
 #导航(?)#
 
@@ -26,13 +26,13 @@ https://github.com/Purstal/go-tieba-base/tree/master/tieba/apis
 可以按照自己的需求修改
 ####核心部分:####
 * 首页监控:
-https://github.com/Purstal/pbtools/tree/master/modules/forum-page-monitor
+https://github.com/Purstal/go-tieba-modules/tree/master/forum-page-monitor
 * 贴子查找:
-https://github.com/Purstal/pbtools/tree/master/modules/post-finder
+https://github.com/Purstal/go-tieba-modules/tree/master/post-finder
 
 ####简单的本体:####
 V ?.?
-https://github.com/Purstal/pbtools/tree/master/tools/simple-post-deleter
+https://github.com/Purstal/go-tieba-tools/tree/master/simple-post-deleter
 
 ###操作量统计:###
 V 1.7
@@ -44,9 +44,9 @@ V 1.7
 本来我是想把这个放到另一个repository的,但是懒得去了..其实接下来的打算是弄`operation-analyser analyse --pbfile=minecraft.toml lastyear range[2015-4-1,yesterday] 2015-2`类似的东西的,但因为这个项目优先级不高,就先(?)不填了..
 
 ####核心部分:####
-https://github.com/Purstal/pbtools/tree/master/modules/operation-analyser
+https://github.com/Purstal/go-tieba-modules/tree/master/operation-analyser
 ####本体:####
-https://github.com/Purstal/pbtools/tree/master/tools/operation-analyser
+https://github.com/Purstal/go-tieba-tools/tree/master/operation-analyser
 
 #依赖#
 github.com/PuerkitoBio/goquery<br/>
@@ -56,7 +56,7 @@ github.com/shiena/ansicolor<br/>
 
 ###其他:###
 
-见 https://github.com/Purstal/pbtools/tree/master/tools
+见 https://github.com/Purstal/go-tieba-tools/tree/master
 
 
 
