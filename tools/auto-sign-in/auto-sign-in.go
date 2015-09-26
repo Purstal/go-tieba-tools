@@ -11,10 +11,10 @@ import (
 
 	"github.com/BurntSushi/toml"
 
-	//"github.com/purstal/pbtools/modules/http"
-	"github.com/purstal/pbtools/modules/logs"
-	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/apis"
+	//"github.com/purstal/go-tieba-base/http"
+	"github.com/purstal/go-tieba-base/logs"
+	"github.com/purstal/go-tieba-base/tieba"
+	"github.com/purstal/go-tieba-base/tieba/apis"
 )
 
 type Config struct {

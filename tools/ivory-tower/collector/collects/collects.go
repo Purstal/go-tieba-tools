@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/purstal/pbtools/modules/logs"
-	"github.com/purstal/pbtools/modules/postbar"
+	"github.com/purstal/go-tieba-base/logs"
+	"github.com/purstal/go-tieba-base/tieba"
 	"github.com/purstal/pbtools/tool-cores/utils"
 )
 

@@ -5,9 +5,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/purstal/pbtools/modules/logs"
-	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/apis/thread-win8-1.5.0.0"
+	"github.com/purstal/go-tieba-base/logs"
+	"github.com/purstal/go-tieba-base/tieba"
+	"github.com/purstal/go-tieba-base/tieba/apis/thread-win8-1.5.0.0"
 )
 
 //threads为升序, cutOffs为升序

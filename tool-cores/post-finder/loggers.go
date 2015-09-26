@@ -3,7 +3,7 @@ package post_finder
 import (
 	"os"
 
-	"github.com/purstal/pbtools/modules/logs"
+	"github.com/purstal/go-tieba-base/logs"
 )
 
 var logger, delayerLogger, unmarshallerLogger *logs.Logger

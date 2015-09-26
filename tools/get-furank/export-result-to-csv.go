@@ -12,7 +12,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 
-	"github.com/purstal/pbtools/modules/misc"
+	"github.com/purstal/go-tieba-base/misc"
 	"github.com/purstal/pbtools/tools/operation-analyser/csv"
 )
 

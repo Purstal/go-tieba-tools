@@ -4,15 +4,15 @@ import (
 	//"fmt"
 	"time"
 
-	"github.com/purstal/pbtools/modules/logs"
-	"github.com/purstal/pbtools/modules/postbar"
+	"github.com/purstal/go-tieba-base/logs"
+	"github.com/purstal/go-tieba-base/tieba"
 
 	"github.com/purstal/pbtools/tool-cores/utils/action"
 
-	//"github.com/purstal/pbtools/modules/postbar/floor-andr-6.1.3"
-	//"github.com/purstal/pbtools/modules/postbar/thread-win8-1.5.0.0"
+	//"github.com/purstal/go-tieba-base/tieba/floor-andr-6.1.3"
+	//"github.com/purstal/go-tieba-base/tieba/thread-win8-1.5.0.0"
 
-	"github.com/purstal/pbtools/modules/postbar/message"
+	"github.com/purstal/go-tieba-base/tieba/message"
 )
 
 type MessageMonitor struct {

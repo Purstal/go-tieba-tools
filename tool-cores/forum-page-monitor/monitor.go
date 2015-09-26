@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/apis/forum-win8-1.5.0.0"
+	"github.com/purstal/go-tieba-base/tieba"
+	"github.com/purstal/go-tieba-base/tieba/apis/forum-win8-1.5.0.0"
 )
 
 type action struct {
@@ -53,7 +53,7 @@ func NewForumPageMonitor(accWin8 *postbar.Account, kw string,
 			go func() {
 				fp, fpts, fpe, err, pberr := forum.GetForumStruct(accWin8, kw, monitor.rn, 1)
 				if err != nil || pberr != nil {
-					//fmt.Println(accWin8)
+					//fmt.Println(kw)
 					fmt.Println("获取主页时出错: ", err, pberr)
 					return
 				}

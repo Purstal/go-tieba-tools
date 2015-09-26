@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/purstal/pbtools/modules/logs"
+	"github.com/purstal/go-tieba-base/logs"
 
 	"github.com/purstal/pbtools/tool-cores/utils/action"
 )
@@ -123,7 +123,8 @@ func (m RegexpKeywordManager) KeyWords() []RegexpKeyword {
 }
 
 func LoadExps(file *os.File, exps *[]RegexpKeyword, logger *logs.Logger) error {
-	bytes, err := ioutil.ReadAll(file)
+
+	bytes, err := ReadAll(file)
 	if err != nil {
 		return err
 	}
@@ -197,4 +198,23 @@ func LoadExps(file *os.File, exps *[]RegexpKeyword, logger *logs.Logger) error {
 	//logger.Debug("现在的关键词:", newExpSlice, ".")
 
 	return nil
+}
+
+func ReadAll(file *os.File) ([]byte, error) {
+	var data, err = ioutil.ReadAll(file)
+
+	if err != nil {
+		return data, err
+	}
+
+	if len(data) < 3 {
+		return data, nil
+	}
+
+	if data[0] == 0xEF && data[1] == 0xBB && data[2] == 0xBF {
+
+		return data[3:], nil
+	}
+
+	return data, nil
 }

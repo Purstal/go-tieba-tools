@@ -3,12 +3,11 @@ package kw_manager
 import (
 	//"sync"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"time"
 
-	"github.com/purstal/pbtools/modules/logs"
+	"github.com/purstal/go-tieba-base/logs"
 
 	"github.com/purstal/pbtools/tool-cores/utils/action"
 )
@@ -115,7 +114,7 @@ func (m StringKeywordManager) KeyWords() map[string]struct{} {
 }
 
 func LoadStrings(file *os.File, set *map[string]struct{}, logger *logs.Logger) error {
-	bytes, err := ioutil.ReadAll(file)
+	bytes, err := ReadAll(file)
 	if err != nil {
 		return err
 	}

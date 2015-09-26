@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/purstal/pbtools/modules/http"
-	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/thread-win8-1.5.0.0"
+	"github.com/purstal/go-tieba-base/http"
+	"github.com/purstal/go-tieba-base/tieba"
+	"github.com/purstal/go-tieba-base/tieba/thread-win8-1.5.0.0"
 	"github.com/purstal/pbtools/tool-cores/utils"
 )
 

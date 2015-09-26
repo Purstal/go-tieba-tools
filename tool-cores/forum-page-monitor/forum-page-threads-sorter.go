@@ -1,7 +1,7 @@
 package forum_page_monitor
 
 import (
-	"github.com/purstal/pbtools/modules/postbar/apis/forum-win8-1.5.0.0"
+	"github.com/purstal/go-tieba-base/tieba/apis/forum-win8-1.5.0.0"
 )
 
 type PageThreadsSorter []*forum.ForumPageThread

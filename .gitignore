@@ -35,3 +35,5 @@ _*.bat
 
 _.*
 testA.go
+test.go
+test.rb

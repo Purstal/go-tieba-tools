@@ -1,7 +1,7 @@
 package post_finder
 
 import (
-	"github.com/purstal/pbtools/modules/postbar/apis/forum-win8-1.5.0.0"
+	"github.com/purstal/go-tieba-base/tieba/apis/forum-win8-1.5.0.0"
 )
 
 func IsNewThread(thread *forum.ForumPageThread) bool {

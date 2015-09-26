@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/purstal/pbtools/modules/postbar"
+	"github.com/purstal/go-tieba-base/tieba"
 
 	postfinder "github.com/purstal/pbtools/tool-cores/post-finder"
 

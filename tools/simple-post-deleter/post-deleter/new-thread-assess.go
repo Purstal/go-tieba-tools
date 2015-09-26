@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/purstal/pbtools/modules/postbar"
-	tp "github.com/purstal/pbtools/modules/postbar/apis/thread-win8-1.5.0.0"
+	"github.com/purstal/go-tieba-base/tieba"
+	tp "github.com/purstal/go-tieba-base/tieba/apis/thread-win8-1.5.0.0"
 
 	postfinder "github.com/purstal/pbtools/tool-cores/post-finder"
 )

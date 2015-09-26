@@ -7,9 +7,9 @@ import (
 	"os"
 	"strconv"
 
-	pbhttp "github.com/purstal/pbtools/modules/http"
-	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/apis"
+	pbhttp "github.com/purstal/go-tieba-base/http"
+	"github.com/purstal/go-tieba-base/tieba"
+	"github.com/purstal/go-tieba-base/tieba/apis"
 )
 
 type MyMux struct{}

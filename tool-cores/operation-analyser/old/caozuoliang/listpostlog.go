@@ -1,6 +1,6 @@
 package caozuoliang
 
-import "github.com/purstal/pbtools/modules/http"
+import "github.com/purstal/go-tieba-base/http"
 import "github.com/purstal/pbtools/tool-cores/operation-analyser/old/log"
 
 import (

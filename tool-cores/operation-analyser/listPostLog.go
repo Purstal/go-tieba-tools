@@ -10,8 +10,8 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 
-	"github.com/purstal/pbtools/modules/http"
-	"github.com/purstal/pbtools/modules/misc"
+	"github.com/purstal/go-tieba-base/http"
+	"github.com/purstal/go-tieba-base/misc"
 	//"github.com/purstal/pbtools/tool-cores/operation-analyser/old/log"
 )
 

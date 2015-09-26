@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/purstal/pbtools/modules/misc"
+	"github.com/purstal/go-tieba-base/misc"
 )
 
 func main() {

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/advsearch"
-	"github.com/purstal/pbtools/modules/postbar/apis"
-	"github.com/purstal/pbtools/modules/postbar/apis/forum-win8-1.5.0.0"
+	"github.com/purstal/go-tieba-base/tieba"
+	"github.com/purstal/go-tieba-base/tieba/adv-search"
+	"github.com/purstal/go-tieba-base/tieba/apis"
+	"github.com/purstal/go-tieba-base/tieba/apis/forum-win8-1.5.0.0"
 	monitor "github.com/purstal/pbtools/tool-cores/forum-page-monitor"
 )
 

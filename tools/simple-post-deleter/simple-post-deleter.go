@@ -10,23 +10,18 @@ import (
 	"os"
 	"time"
 
-	"github.com/purstal/pbtools/modules/logs"
-	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/apis"
+	//"github.com/mitchellh/go-mruby"
 
+	"github.com/purstal/go-tieba-base/logs"
+	"github.com/purstal/go-tieba-base/tieba"
+	"github.com/purstal/go-tieba-base/tieba/apis"
+
+	//"github.com/purstal/pbtools/tools/simple-post-deleter/mruby-support"
 	postdeleter "github.com/purstal/pbtools/tools/simple-post-deleter/post-deleter"
 )
 
 var accWin8 *postbar.Account
 var accAndr *postbar.Account
-
-/*
-func init() {
-	go func() {
-		http.ListenAndServe(":33101", nil)
-	}()
-}
-*/
 
 type Settings struct {
 	BDUSS     string
@@ -45,7 +40,7 @@ type Settings struct {
 func main() {
 	var logDir = time.Now().Format("log/20060102-150405-post-deleter/")
 
-	os.Mkdir(logDir, 0644)
+	os.MkdirAll(logDir, 0644)
 
 	logs.Info("删贴机启动", time.Now())
 
@@ -87,21 +82,47 @@ func main() {
 		}
 	}
 
-	d := postdeleter.NewPostDeleter(accWin8, accAndr, settings.ForumName, settings.ForumID,
-		settings.ContentRegexpFilePath, settings.UserNameRegexpFilePath,
-		settings.TidWhiteListFilePath, settings.UserNameWhiteListFilePath, settings.BawuListFilePath,
-		settings.DebugPort != 0, logDir)
+	//mrb := initMRuby(logs.DefaultLogger)
 
-	if d == nil {
-		logs.Fatal("无法启动删贴机,退出.")
+	if d, err := postdeleter.NewPostDeleter(
+		postdeleter.PostDeleterBuildingParameters{
+			AccWin8: accWin8,
+			AccAndr: accAndr,
+
+			ForumName: settings.ForumName,
+			ForumID:   settings.ForumID,
+
+			ConfgiFileName: postdeleter.ConfgiFileName{
+				ContentRegexp:     settings.ContentRegexpFilePath,
+				UserNameRegexp:    settings.UserNameRegexpFilePath,
+				TidWhiteList:      settings.TidWhiteListFilePath,
+				UserNameWhiteList: settings.UserNameWhiteListFilePath,
+				BawuList:          settings.BawuListFilePath,
+			},
+
+			//Mrb: mrb,
+
+			Debugging: settings.DebugPort != 0,
+			LogDir:    logDir,
+		}); err != nil {
+		logs.Fatal("无法启动删贴机,退出.", err)
 		os.Exit(1)
+	} else {
+		d.Run(time.Second)
 	}
-
-	d.Run(time.Second)
 
 	<-make(chan struct{})
 
 }
+
+/*
+func initMRuby(logger *logs.Logger) *mruby.Mrb {
+	mrb := mruby.NewMrb()
+	mruby_support.LoadAll(logger, mrb, "scripts/core")
+	mruby_support.LoadAll(logger, mrb, "scripts")
+	return mrb
+}
+*/
 
 func getFid(forumName string) uint64 {
 	var fid uint64

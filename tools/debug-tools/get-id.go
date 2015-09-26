@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/purstal/pbtools/modules/postbar/apis"
+	"github.com/purstal/go-tieba-base/tieba/apis"
 )
 
 const usage = `No Usage`

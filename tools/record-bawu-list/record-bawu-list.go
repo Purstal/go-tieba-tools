@@ -7,7 +7,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 
-	"github.com/purstal/pbtools/modules/misc"
+	"github.com/purstal/go-tieba-base/misc"
 )
 
 const URLTemplet = "http://tieba.baidu.com/bawu2/platform/listBawuTeamInfo?word=%s"

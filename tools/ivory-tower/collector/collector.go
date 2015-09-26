@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/purstal/pbtools/modules/logs"
-	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/apis/thread-win8-1.5.0.0"
+	"github.com/purstal/go-tieba-base/logs"
+	"github.com/purstal/go-tieba-base/tieba"
+	"github.com/purstal/go-tieba-base/tieba/apis/thread-win8-1.5.0.0"
 	"github.com/purstal/pbtools/tools/ivory-tower/collector/collects"
 	"github.com/purstal/pbtools/tools/operation-analyser/csv"
 )
@@ -60,12 +60,7 @@ func main() {
 	result := collects.Validate(accWin8, threads, cutOffs)
 	logs.Info("验证完毕.")
 
-	for i := 0; i < len(result); i++ {
-		var date = time.Unix(cutOffs[i-1], 0).Format("2006-01-02")
-		for j := 0; j < len(result[i]); j++ {
-			result[i][j].Time = date
-		}
-	}
+	logs.Debug(fmt.Sprintf("%d %d", len(result), len(cutOffs)))
 
 	logs.Info("记录数据.")
 

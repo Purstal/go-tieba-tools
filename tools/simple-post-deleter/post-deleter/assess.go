@@ -1,12 +1,12 @@
 package post_deleter
 
 import (
-	"fmt"
+	//"fmt"
 	"regexp"
 	"strings"
 
-	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/advsearch"
+	"github.com/purstal/go-tieba-base/tieba"
+	"github.com/purstal/go-tieba-base/tieba/adv-search"
 
 	postfinder "github.com/purstal/pbtools/tool-cores/post-finder"
 )
@@ -47,23 +47,24 @@ func (d *PostDeleter) ThreadFilter(account *postbar.Account, thread *postfinder.
 func (d *PostDeleter) PostAssessor(account *postbar.Account, post *postfinder.ThreadPagePost) {
 	//logs.Debug(MakePrefix(GetServerTimeFromExtra(post.Extra), post.Thread.Tid, post.Post.Pid, 0, post.Post.Author.ID),
 	//	"新回复") //, post.Thread.Title, post.Post.Author, post.Post.ContentList)
-	if _, exist := d.Records.RulesThread_Tids[post.Thread.Tid]; exist &&
-		!InStringSet(d.BawuList.KeyWords(), post.Post.Author.Name) {
+	/*
+		if _, exist := d.Records.RulesThread_Tids[post.Thread.Tid]; exist &&
+			!InStringSet(d.BawuList.KeyWords(), post.Post.Author.Name) {
 
-		d.DeletePost("主题页面", account, &DeletePostRequest{
-			tid:      post.Thread.Tid,
-			pid:      post.Post.Pid,
-			spid:     0,
-			uid:      post.Post.Author.ID,
-			title:    post.Thread.Title,
-			content:  post.Post.ContentList,
-			author:   post.Post.Author.Name,
-			postTime: post.Post.PostTime.Format("2006-01-02 15:04:05"),
-			reason:   "非吧务回复吧规",
-			remark:   fmt.Sprintf("楼层:%d, ", post.Post.Floor),
-		}, false, "")
-		return
-	}
+			d.DeletePost("主题页面", account, &DeletePostRequest{
+				tid:      post.Thread.Tid,
+				pid:      post.Post.Pid,
+				spid:     0,
+				uid:      post.Post.Author.ID,
+				title:    post.Thread.Title,
+				content:  post.Post.ContentList,
+				author:   post.Post.Author.Name,
+				postTime: post.Post.PostTime.Format("2006-01-02 15:04:05"),
+				reason:   "非吧务回复吧规",
+				remark:   fmt.Sprintf("楼层:%d, ", post.Post.Floor),
+			}, false, "")
+			return
+		}*/
 
 	//DebugLog("一般回复", post.Post.PGetContentList())
 	for _, content := range post.Post.ContentList {
@@ -95,7 +96,7 @@ func (d *PostDeleter) AdvSearchAssessor(account *postbar.Account, result *advsea
 			return postfinder.Continue //测试用.这样我在水楼的回复也能被找到并被处理...
 		}
 		return postfinder.Finish //防止水楼回复被删
-	} else if _, exist := d.Records.RulesThread_Tids[result.Tid]; exist &&
+	} /* else if _, exist := d.Records.RulesThread_Tids[result.Tid]; exist &&
 		!InStringSet(d.BawuList.KeyWords(), result.Author.Name) {
 
 		d.DeletePost("高级搜索", account, &DeletePostRequest{
@@ -111,7 +112,7 @@ func (d *PostDeleter) AdvSearchAssessor(account *postbar.Account, result *advsea
 			remark:   "",
 		}, false, "")
 		return postfinder.Finish
-	}
+	}*/
 
 	//DebugLog("高级搜索", result.PGetContentList())
 	if len(result.Content) <= 120 {

@@ -12,8 +12,8 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 
-	"github.com/purstal/pbtools/modules/logs"
-	"github.com/purstal/pbtools/modules/misc"
+	"github.com/purstal/go-tieba-base/logs"
+	"github.com/purstal/go-tieba-base/misc"
 )
 
 type Record struct {

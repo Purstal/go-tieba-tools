@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/purstal/pbtools/modules/logs"
+	"github.com/purstal/go-tieba-base/logs"
 	"github.com/purstal/pbtools/tools/operation-analyser/csv"
 )
 
@@ -16,12 +16,12 @@ type OperationLogger struct {
 	lock   sync.Mutex
 }
 
-func NewOperationLogger(logDir string) *OperationLogger {
+func NewOperationLogger(logDir string) (*OperationLogger, error) {
 	var logger OperationLogger
 	logFile, err := os.Create(logDir + "post-deleter-操作记录.csv")
 	if err != nil {
 		logs.Fatal("无法创建log文件.", err)
-		return nil
+		return nil, err
 	}
 
 	logFile.Write([]byte{0xEF, 0xBB, 0xBF})
@@ -31,7 +31,7 @@ func NewOperationLogger(logDir string) *OperationLogger {
 	logger.writer.Write([]string{"操作", "状态", "操作来源", "原因", "本地操作时间", "发贴时间",
 		"发贴人", "uid", "主题标题", "tid(主题id)", "pid(楼层id/楼中楼id)", "spid(楼中楼id)", "贴子内容", "其他"})
 
-	return &logger
+	return &logger, nil
 }
 
 func (l *OperationLogger) Record(from string, _opTime time.Time, _r interface{}, status string) {

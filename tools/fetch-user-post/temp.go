@@ -10,7 +10,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 
-	"github.com/purstal/pbtools/modules/postbar/advsearch"
+	"github.com/purstal/go-tieba-base/tieba/adv-search"
 	"github.com/purstal/pbtools/tools/operation-analyser/csv"
 )
 

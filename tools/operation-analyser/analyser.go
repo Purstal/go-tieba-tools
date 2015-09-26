@@ -12,10 +12,10 @@ import (
 
 	"github.com/BurntSushi/toml"
 
-	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/apis"
+	"github.com/purstal/go-tieba-base/tieba"
+	"github.com/purstal/go-tieba-base/tieba/apis"
 
-	"github.com/purstal/pbtools/modules/logs"
+	"github.com/purstal/go-tieba-base/logs"
 	oldlog "github.com/purstal/pbtools/tool-cores/operation-analyser/old/log"
 
 	old "github.com/purstal/pbtools/tool-cores/operation-analyser/old/caozuoliang"
@@ -215,7 +215,7 @@ func ReadFile(fileName string) ([]byte, error) {
 		return data, err
 	}
 
-	if len(data) < 2 {
+	if len(data) < 3 {
 		return data, nil
 	}
 	if data[0] == 0xEF && data[1] == 0xBB && data[2] == 0xBF {

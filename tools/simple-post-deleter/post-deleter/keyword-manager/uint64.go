@@ -3,13 +3,12 @@ package kw_manager
 import (
 	//"sync"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/purstal/pbtools/modules/logs"
+	"github.com/purstal/go-tieba-base/logs"
 
 	"github.com/purstal/pbtools/tool-cores/utils/action"
 )
@@ -116,7 +115,7 @@ func (m Uint64KeywordManager) KeyWords() map[uint64]struct{} {
 }
 
 func LoadUint64s(file *os.File, set *map[uint64]struct{}, logger *logs.Logger) error {
-	bytes, err := ioutil.ReadAll(file)
+	bytes, err := ReadAll(file)
 	if err != nil {
 		return err
 	}

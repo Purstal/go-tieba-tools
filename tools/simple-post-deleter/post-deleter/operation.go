@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/apis"
+	"github.com/purstal/go-tieba-base/tieba"
+	"github.com/purstal/go-tieba-base/tieba/apis"
 )
 
 type DeletePostRequest struct {

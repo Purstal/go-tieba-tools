@@ -6,10 +6,10 @@ import (
 	"time"
 	//"unsafe"
 
-	"github.com/purstal/pbtools/modules/postbar"
-	"github.com/purstal/pbtools/modules/postbar/advsearch"
-	floor "github.com/purstal/pbtools/modules/postbar/apis/floor-andr-6.1.3"
-	thread "github.com/purstal/pbtools/modules/postbar/apis/thread-win8-1.5.0.0"
+	"github.com/purstal/go-tieba-base/tieba"
+	"github.com/purstal/go-tieba-base/tieba/adv-search"
+	floor "github.com/purstal/go-tieba-base/tieba/apis/floor-andr-6.1.3"
+	thread "github.com/purstal/go-tieba-base/tieba/apis/thread-win8-1.5.0.0"
 )
 
 type FloorPageComment struct {
