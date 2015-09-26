@@ -6,16 +6,18 @@
 个人有关百度贴吧的一些工具,比如用来监控贴吧<br/>
 因为算是自己第一个能拿的出手(?)的东西,所以肯定有许多不足,请见谅.<br/>
 
+把基础部分的东西转移到了:https://github.com/Purstal/go-tieba-base <br/>
+这里的东西也会逐渐拆分到各个小repo里.
 
 #导航(?)#
 
 ##API##
 
 ###**处理客户端的验证:**###
-https://github.com/Purstal/pbtools/blob/master/modules/postbar/signture.go
+https://github.com/Purstal/go-tieba-base/tree/master/tieba/signture.go
 
 ###**apis:**###
-https://github.com/Purstal/pbtools/tree/master/modules/postbar/apis
+https://github.com/Purstal/go-tieba-base/tree/master/tieba/apis
 
 
 ##工具##
