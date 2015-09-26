@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 
-	pbhttp "github.com/purstal/go-tieba-base/http"
+	pbhttp "github.com/purstal/go-tieba-base/simple-http"
 	"github.com/purstal/go-tieba-base/tieba"
 	"github.com/purstal/go-tieba-base/tieba/apis"
 )

@@ -7,12 +7,12 @@ import (
 	"strconv"
 	"time"
 
-	analyser "github.com/purstal/go-tieba-modules/operation-analyser"
+	"github.com/purstal/go-tieba-tools/operation-fetcher/scanner"
 
-	"github.com/purstal/go-tieba-tools/operation-analyser/csv"
+	"github.com/purstal/go-tieba-tools/operation-fetcher/csv"
 )
 
-func Analyse1(datas []analyser.DayData) {
+func Analyse1(datas []scanner.DayData) {
 	var bawuTotal = make(map[string]int)
 	var hourCounts = make([][24]map[string]int, len(datas))
 

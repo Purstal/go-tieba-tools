@@ -11,7 +11,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 
-	//"github.com/purstal/go-tieba-base/http"
+	//"github.com/purstal/go-tieba-base/simple-http"
 	"github.com/purstal/go-tieba-base/logs"
 	"github.com/purstal/go-tieba-base/tieba"
 	"github.com/purstal/go-tieba-base/tieba/apis"

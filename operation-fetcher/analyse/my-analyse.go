@@ -6,10 +6,10 @@ import (
 	"sort"
 	"time"
 
-	analyser "github.com/purstal/go-tieba-modules/operation-analyser"
+	"github.com/purstal/go-tieba-tools/operation-fetcher/scanner"
 )
 
-func Analyse2(datas []analyser.DayData) {
+func Analyse2(datas []scanner.DayData) {
 	var sentenceMap = make(map[string]int)
 	var deletedByIamunknown = make(map[int]bool)
 	for _, data := range datas {
@@ -21,7 +21,7 @@ func Analyse2(datas []analyser.DayData) {
 	}
 	for _, data := range datas {
 		for _, log := range data.Logs {
-			if log.Operator == "iamunknown" || log.OperateType != analyser.OpType_Delete {
+			if log.Operator == "iamunknown" || log.OperateType != scanner.OpType_Delete {
 				continue
 			}
 			var sentence = log.Text
