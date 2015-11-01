@@ -10,8 +10,8 @@ import (
 	"github.com/purstal/go-tieba-base/logs"
 	"github.com/purstal/go-tieba-base/tieba"
 	"github.com/purstal/go-tieba-base/tieba/apis/thread-win8-1.5.0.0"
+	"github.com/purstal/go-tieba-modules/utils/csv"
 	"github.com/purstal/go-tieba-tools/ivory-tower/collector/collects"
-	"github.com/purstal/go-tieba-tools/operation-analyser/csv"
 )
 
 func main() {
@@ -60,20 +60,18 @@ func main() {
 	result := collects.Validate(accWin8, threads, cutOffs)
 	logs.Info("验证完毕.")
 
-	logs.Debug(fmt.Sprintf("%d %d", len(result), len(cutOffs)))
-
 	logs.Info("记录数据.")
 
 	os.Mkdir("新主题", 0644)
 
-	if flags.OutputFormat.CSV {
-		for i, threads := range result[1:] {
-			var rangeStr string
-			if i == len(threads)-1 {
-				rangeStr = begin.Format("2006年01月02日 至 15时04分05秒")
-			} else {
-				rangeStr = time.Unix(cutOffs[i], 0).Format("2006年01月02日")
-			}
+	for i, threads := range result[1:] {
+		var rangeStr string
+		if i == len(threads)-1 {
+			rangeStr = begin.Format("2006年01月02日 至 15时04分05秒")
+		} else {
+			rangeStr = time.Unix(cutOffs[i], 0).Format("2006年01月02日")
+		}
+		if flags.OutputFormat.CSV {
 			if err := SaveRecords("./新主题/", threads, rangeStr); err != nil {
 				logs.Info(fmt.Sprintf("%s csv记录失败: %s.", err.Error()))
 			} else {
@@ -302,7 +300,7 @@ func extractAbstract(contents []interface{}) string {
 
 //从 `../recorder/recorder.go` 复制来并稍作修改
 func SaveRecords(path string, records []collects.Thread, rangeStr string) error {
-	const TIME_FORMAT_LAYOUT = "2006年01月02日15点04分05秒"
+	//const TIME_FORMAT_LAYOUT = "2006年01月02日15点04分05秒"
 	f, err := os.Create(path + fmt.Sprintf("%s.csv", rangeStr))
 	f.Write([]byte{0xEF, 0xBB, 0xBF})
 	if err != nil {

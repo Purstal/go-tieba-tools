@@ -9,7 +9,7 @@ import (
 
 	"github.com/purstal/go-tieba-tools/operation-fetcher/scanner"
 
-	"github.com/purstal/go-tieba-tools/operation-fetcher/csv"
+	"github.com/purstal/go-tieba-modules/utils/csv"
 )
 
 func Analyse1(datas []scanner.DayData) {
